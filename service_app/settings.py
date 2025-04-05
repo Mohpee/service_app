@@ -11,9 +11,11 @@ env = environ.Env()
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# Move DEBUG setting to the top, before other settings that depend on it
+DEBUG = env.bool('DEBUG', default=False)
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 
@@ -31,7 +33,6 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'corsheaders',
-    'debug_toolbar',
     
     # Local apps
     'orders.apps.OrdersConfig',
@@ -42,14 +43,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Add debug toolbar
 ]
 
 ROOT_URLCONF = 'service_app.urls'
@@ -57,7 +57,10 @@ ROOT_URLCONF = 'service_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'service_app' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -243,20 +246,49 @@ STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
 
 # M-Pesa Configurations
 MPESA_ENVIRONMENT = env('MPESA_ENVIRONMENT', default='sandbox')
-MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
-MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
-MPESA_SHORTCODE = env('MPESA_SHORTCODE')
-MPESA_EXPRESS_SHORTCODE = env('MPESA_EXPRESS_SHORTCODE')
-MPESA_SHORTCODE_TYPE = env('MPESA_SHORTCODE_TYPE', default='paybill')
-MPESA_PASSKEY = env('MPESA_PASSKEY')
-MPESA_INITIATOR_USERNAME = env('MPESA_INITIATOR_USERNAME')
-MPESA_INITIATOR_SECURITY_CREDENTIAL = env('MPESA_INITIATOR_SECURITY_CREDENTIAL')
+MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY', default='your-consumer-key')
+MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET', default='your-consumer-secret')
+MPESA_SHORTCODE = env('MPESA_SHORTCODE', default='174379')
+MPESA_EXPRESS_SHORTCODE = env('MPESA_EXPRESS_SHORTCODE', default='174379')
+MPESA_PASSKEY = env('MPESA_PASSKEY', default='bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
+MPESA_INITIATOR_USERNAME = env('MPESA_INITIATOR_USERNAME', default='testapi')
+MPESA_INITIATOR_SECURITY_CREDENTIAL = env('MPESA_INITIATOR_SECURITY_CREDENTIAL', default='Safaricom999!*!')
 
 # Security Settings
-if not DEBUG:
-    SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=True)
-    SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=True)
-    CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=True)
+USE_SSL = env.bool('USE_SSL', default=False)
+
+if DEBUG:
+    # Development settings - Force HTTP
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_PROXY_SSL_HEADER = None
+    SECURE_SSL_HOST = None
+    SECURE_HSTS_SECONDS = 0  # Disable HSTS in development
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+    
+    # Base URL for development
+    BASE_URL = 'http://localhost:8000'
+    
+else:
+    # Production security settings
+    SECURE_SSL_REDIRECT = USE_SSL
+    SESSION_COOKIE_SECURE = USE_SSL
+    CSRF_COOKIE_SECURE = USE_SSL
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    if USE_SSL:
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+        SECURE_SSL_HOST = env('SECURE_SSL_HOST', default=None)
+        SECURE_HSTS_SECONDS = 31536000  # 1 year
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
+        BASE_URL = 'https://' + ALLOWED_HOSTS[0]
+    else:
+        BASE_URL = 'http://' + ALLOWED_HOSTS[0]
 
 # Celery Settings
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
@@ -265,3 +297,13 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+# Debug toolbar settings
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    'RENDER_PANELS': True,
+}
+
+if DEBUG:
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)

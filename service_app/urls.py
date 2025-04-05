@@ -22,8 +22,10 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .views import BaseView
 
 urlpatterns = [
+    path('', BaseView.as_view(), name='home'),  # Changed from 'base' to 'home'
     path('admin/', admin.site.urls),
     path('api/orders/', include('orders.urls')),
     path('api/services/', include('services.urls')),
