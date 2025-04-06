@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Profile | Service App{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Update Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Continue with other fields -->
+                        {% for field in form %}
+                            {% if field.name not in 'first_name,last_name'|split:',' %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                            <a href="{% url 'users:profile' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

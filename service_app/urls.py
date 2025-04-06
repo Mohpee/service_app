@@ -27,7 +27,7 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),
-    path('users/', include('users.urls')),
+    path('users/', include('users.urls', namespace='users')),
     path('orders/', include('orders.urls')),
     path('services/', include('services.urls')),
     path('payments/', include('payments.urls')),
@@ -42,3 +42,4 @@ if settings.DEBUG:
         path('__debug__/', include(debug_toolbar.urls)),
     ]
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
