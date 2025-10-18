@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block title %}ServiceHub - Find Trusted Local Service Providers{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Find Trusted Local Services</h1>
+            <p>Connect with verified service providers in your community. From home cleaning to professional consulting, get quality services at your fingertips.</p>
+
+            <!-- Search Bar -->
+            <div style="max-width: 600px; margin: 0 auto;">
+                <form class="d-flex gap-2" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: var(--spacing-sm); border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.2);">
+                    <input type="text" placeholder="What service do you need?" style="flex: 1; padding: var(--spacing-md); border: none; background: transparent; color: white; font-size: 1rem;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='transparent'">
+                    <input type="text" placeholder="Location" style="flex: 0 0 200px; padding: var(--spacing-md); border: none; background: transparent; color: white; font-size: 1rem;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='transparent'">
+                    <button type="submit" class="btn btn-secondary" style="border-radius: var(--radius-full); padding: var(--spacing-md) var(--spacing-lg);">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </form>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="d-flex justify-content-center gap-4 mt-5" style="opacity: 0.9;">
+                <div class="text-center">
+                    <div style="font-size: 2rem; font-weight: 700;">500+</div>
+                    <div>Service Providers</div>
+                </div>
+                <div class="text-center">
+                    <div style="font-size: 2rem; font-weight: 700;">50+</div>
+                    <div>Service Categories</div>
+                </div>
+                <div class="text-center">
+                    <div style="font-size: 2rem; font-weight: 700;">10k+</div>
+                    <div>Happy Customers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section style="padding: var(--spacing-xxl) 0; background: white;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Why Choose ServiceHub?</h2>
+            <p style="font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+                We connect you with trusted professionals who deliver quality services with transparency and reliability.
+            </p>
+        </div>
+
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-xl);">
+            <!-- Feature 1 -->
+            <div class="text-center">
+                <div style="width: 80px; height: 80px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 2rem; color: white;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Verified Professionals</h4>
+                <p style="color: var(--text-secondary);">All service providers undergo thorough background checks and verification processes.</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="text-center">
+                <div style="width: 80px; height: 80px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 2rem; color: white;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h4>Quick & Reliable</h4>
+                <p style="color: var(--text-secondary);">Book services instantly and get reliable professionals at your doorstep when you need them.</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="text-center">
+                <div style="width: 80px; height: 80px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 2rem; color: white;">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>Quality Guaranteed</h4>
+                <p style="color: var(--text-secondary);">Read reviews, check ratings, and get quality service with our satisfaction guarantee.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Services Section -->
+<section style="padding: var(--spacing-xxl) 0; background: var(--light-primary);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Popular Services</h2>
+            <p style="font-size: 1.125rem; color: var(--text-secondary);">Discover the most sought-after services in your area</p>
+        </div>
+
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg);">
+            <!-- Service Category Cards -->
+            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=home'">
+                <div style="height: 200px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="card-body text-center">
+                    <h4>Home & Cleaning</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Professional cleaning, plumbing, electrical, and home maintenance services</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge badge-info">50+ Providers</span>
+                        <span class="badge badge-success">4.8★ Average</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=beauty'">
+                <div style="height: 200px; background: linear-gradient(135deg, #f093fb, #f5576c); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="card-body text-center">
+                    <h4>Beauty & Wellness</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Hair styling, spa treatments, fitness training, and wellness services</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge badge-info">30+ Providers</span>
+                        <span class="badge badge-success">4.9★ Average</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=education'">
+                <div style="height: 200px; background: linear-gradient(135deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="card-body text-center">
+                    <h4>Education & Training</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Tutoring, language classes, professional training, and skill development</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge badge-info">25+ Providers</span>
+                        <span class="badge badge-success">4.7★ Average</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=professional'">
+                <div style="height: 200px; background: linear-gradient(135deg, #43e97b, #38f9d7); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="card-body text-center">
+                    <h4>Professional Services</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Legal, accounting, consulting, and other professional services</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge badge-info">40+ Providers</span>
+                        <span class="badge badge-success">4.8★ Average</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section style="padding: var(--spacing-xxl) 0; background: white;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>How It Works</h2>
+            <p style="font-size: 1.125rem; color: var(--text-secondary);">Getting quality services has never been easier</p>
+        </div>
+
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-xl);">
+            <!-- Step 1 -->
+            <div class="text-center">
+                <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 1.5rem; color: white; font-weight: 700;">1</div>
+                <h4>Search & Discover</h4>
+                <p style="color: var(--text-secondary);">Browse through our verified service providers and find exactly what you need.</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="text-center">
+                <div style="width: 60px; height: 60px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 1.5rem; color: white; font-weight: 700;">2</div>
+                <h4>Book & Schedule</h4>
+                <p style="color: var(--text-secondary);">Select your preferred provider, choose a convenient time, and book instantly.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center">
+                <div style="width: 60px; height: 60px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 1.5rem; color: white; font-weight: 700;">3</div>
+                <h4>Pay & Relax</h4>
+                <p style="color: var(--text-secondary);">Pay securely through our platform and enjoy professional service at your doorstep.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section style="padding: var(--spacing-xxl) 0; background: var(--dark-primary); color: white;">
+    <div class="container text-center">
+        <h2>Ready to Get Started?</h2>
+        <p style="font-size: 1.125rem; margin-bottom: var(--spacing-xl); opacity: 0.9;">Join thousands of satisfied customers and service providers</p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'users:register' %}" class="btn btn-primary" style="font-size: 1.125rem; padding: var(--spacing-md) var(--spacing-xl);">
+                <i class="fas fa-rocket"></i> Get Started Now
+            </a>
+            <a href="#services" class="btn btn-outline" style="font-size: 1.125rem; padding: var(--spacing-md) var(--spacing-xl); border-color: white; color: white;">
+                <i class="fas fa-search"></i> Browse Services
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Add smooth scroll behavior for internal links
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate service cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all service cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Add hover effects to category cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}

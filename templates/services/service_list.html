@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Services - Find Local Professionals{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section style="background: var(--light-primary); padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1>Find Services</h1>
+            <p style="font-size: 1.125rem; color: var(--text-secondary);">
+                Discover trusted professionals in your area
+            </p>
+        </div>
+
+        <!-- Advanced Search Bar -->
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div class="card-body">
+                <form class="d-grid" style="grid-template-columns: 2fr 1fr 1fr auto; gap: var(--spacing-md); align-items: end;">
+                    <div class="form-group">
+                        <label class="form-label">What service do you need?</label>
+                        <input type="text" name="search" class="form-input" placeholder="e.g., house cleaning, plumbing, tutoring" value="{{ request.GET.q }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-input" placeholder="City, Area" value="{{ request.GET.location }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-input">
+                            <option value="">All Categories</option>
+                            <option value="HOME" {% if request.GET.category == 'HOME' %}selected{% endif %}>Home & Cleaning</option>
+                            <option value="BEAUTY" {% if request.GET.category == 'BEAUTY' %}selected{% endif %}>Beauty & Wellness</option>
+                            <option value="EDU" {% if request.GET.category == 'EDU' %}selected{% endif %}>Education & Training</option>
+                            <option value="PROF" {% if request.GET.category == 'PROF' %}selected{% endif %}>Professional Services</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters and Results Section -->
+<section style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="d-flex gap-4">
+            <!-- Filters Sidebar -->
+            <aside style="flex: 0 0 280px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-filter"></i> Filters</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Price Range -->
+                        <div class="form-group">
+                            <label class="form-label">Price Range</label>
+                            <div class="d-flex gap-2">
+                                <input type="number" name="min_price" class="form-input" placeholder="Min" value="{{ request.GET.min_price }}">
+                                <input type="number" name="max_price" class="form-input" placeholder="Max" value="{{ request.GET.max_price }}">
+                            </div>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="form-group">
+                            <label class="form-label">Minimum Rating</label>
+                            <select name="min_rating" class="form-input">
+                                <option value="">Any Rating</option>
+                                <option value="4" {% if request.GET.min_rating == '4' %}selected{% endif %}>4+ Stars</option>
+                                <option value="3" {% if request.GET.min_rating == '3' %}selected{% endif %}>3+ Stars</option>
+                            </select>
+                        </div>
+
+                        <!-- Availability -->
+                        <div class="form-group">
+                            <label class="form-label">Availability</label>
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
+                                    <input type="checkbox" name="available_today" value="1" {% if request.GET.available_today %}checked{% endif %}>
+                                    Available Today
+                                </label>
+                                <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
+                                    <input type="checkbox" name="available_weekend" value="1" {% if request.GET.available_weekend %}checked{% endif %}>
+                                    Available Weekends
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="form-group">
+                            <label class="form-label">Experience Level</label>
+                            <select name="experience" class="form-input">
+                                <option value="">Any Experience</option>
+                                <option value="1" {% if request.GET.experience == '1' %}selected{% endif %}>1+ Years</option>
+                                <option value="3" {% if request.GET.experience == '3' %}selected{% endif %}>3+ Years</option>
+                                <option value="5" {% if request.GET.experience == '5' %}selected{% endif %}>5+ Years</option>
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn btn-outline" style="width: 100%;" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Results Area -->
+            <main style="flex: 1;">
+                <!-- Results Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2>Services {% if request.GET.q %}for "{{ request.GET.q }}"{% endif %}</h2>
+                        <p style="color: var(--text-secondary);">
+                            {% if services %}Showing {{ services|length }} result{{ services|length|pluralize }}{% else %}No results found{% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="d-flex align-items-center gap-2">
+                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Sort by:</label>
+                        <select name="sort" class="form-input" style="width: auto;" onchange="changeSort(this.value)">
+                            <option value="relevance" {% if request.GET.sort == 'relevance' %}selected{% endif %}>Relevance</option>
+                            <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Rating</option>
+                            <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="text-center" style="display: none; padding: var(--spacing-xxl);">
+                    <div class="loading" style="width: 40px; height: 40px; border: 4px solid var(--light-secondary); border-top: 4px solid #667eea; border-radius: 50%; margin: 0 auto var(--spacing-lg);"></div>
+                    <p>Loading services...</p>
+                </div>
+
+                <!-- Services Grid -->
+                <div id="services-grid" class="d-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-lg);">
+                    {% for service in services %}
+                    <div class="service-card">
+                        <div style="height: 200px; background: var(--light-secondary); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-secondary);">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <i class="fas fa-tools"></i>
+                            {% endif %}
+                        </div>
+
+                        <div class="service-content">
+                            <div class="service-title">{{ service.name }}</div>
+                            <div class="service-provider">
+                                <i class="fas fa-user"></i> {{ service.provider.get_full_name|default:service.provider.username }}
+                            </div>
+
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    {% with ''|center:service.rating|add:'0' as range %}
+                                    {% for i in range %}
+                                        {% if forloop.counter <= service.rating|floatformat:0 %}
+                                            <i class="fas fa-star"></i>
+                                        {% elif service.rating|floatformat:1|add:0.5 == forloop.counter|floatformat:1 %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% endwith %}
+                                </div>
+                                <span style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    {{ service.rating|floatformat:1 }} ({{ service.reviews_count }} reviews)
+                                </span>
+                            </div>
+
+                            <div class="service-price">
+                                KES {{ service.price|floatformat:0 }}
+                                {% if service.base_price %}
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary); text-decoration: line-through;">
+                                        KES {{ service.base_price|floatformat:0 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="service-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ service.location }}
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="{% url 'services:service-detail' service.pk %}" class="btn btn-primary" style="flex: 1;">
+                                    View Details
+                                </a>
+                                <button class="btn btn-outline" onclick="bookService('{{ service.pk }}')">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center" style="grid-column: 1 / -1; padding: var(--spacing-xxl);">
+                        <i class="fas fa-search" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg);"></i>
+                        <h3>No services found</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                            Try adjusting your search criteria or browse our popular categories.
+                        </p>
+                        <a href="{% url 'pages:homepage' %}" class="btn btn-primary">Browse All Services</a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if services.has_other_pages %}
+                <div class="d-flex justify-content-center mt-5">
+                    <nav>
+                        <ul class="d-flex gap-2" style="list-style: none; align-items: center;">
+                            {% if services.has_previous %}
+                                <li><a href="?{% url_replace page=services.previous_page_number %}" class="btn btn-outline">Previous</a></li>
+                            {% endif %}
+
+                            {% for num in services.paginator.page_range %}
+                                {% if services.number == num %}
+                                    <li><span class="btn btn-primary" style="cursor: default;">{{ num }}</span></li>
+                                {% elif num > services.number|add:'-3' and num < services.number|add:'3' %}
+                                    <li><a href="?{% url_replace page=num %}" class="btn btn-outline">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if services.has_next %}
+                                <li><a href="?{% url_replace page=services.next_page_number %}" class="btn btn-outline">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function clearFilters() {
+        // Clear all form inputs
+        document.querySelectorAll('input[type="text"], input[type="number"], select').forEach(input => {
+            input.value = '';
+        });
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        // Submit the form
+        window.location.href = window.location.pathname;
+    }
+
+    function changeSort(sortValue) {
+        const url = new URL(window.location);
+        url.searchParams.set('sort', sortValue);
+        window.location.href = url.toString();
+    }
+
+    function bookService(serviceId) {
+        // Simple JavaScript implementation - in real app, check authentication status
+        window.location.href = `/orders/book/${serviceId}/`;
+    }
+
+    // Auto-submit form on filter change
+    document.querySelectorAll('input, select').forEach(element => {
+        element.addEventListener('change', function() {
+            // Debounce the submission
+            clearTimeout(window.filterTimeout);
+            window.filterTimeout = setTimeout(() => {
+                this.form.submit();
+            }, 500);
+        });
+    });
+
+    // Show loading state during search
+    document.querySelector('form').addEventListener('submit', function() {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('services-grid').style.opacity = '0.5';
+    });
+</script>
+{% endblock %}

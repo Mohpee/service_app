@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}Provider Dashboard - ServiceHub{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<section style="background: var(--secondary-gradient); color: white; padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1>Hello, {{ user.get_full_name|default:user.username }}!</h1>
+                <p style="opacity: 0.9; font-size: 1.125rem;">Manage your services and track your earnings</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: var(--spacing-sm);">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div style="opacity: 0.9;">Service Provider</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Cards -->
+<section style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xxl);">
+            <!-- Active Services -->
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700;">{{ services_count }}</div>
+                    <div style="color: var(--text-secondary);">Active Services</div>
+                </div>
+            </div>
+
+            <!-- Total Orders -->
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="width: 60px; height: 60px; background: var(--info-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700;">{{ orders_count }}</div>
+                    <div style="color: var(--text-secondary);">Total Orders</div>
+                </div>
+            </div>
+
+            <!-- Completed Orders -->
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="width: 60px; height: 60px; background: var(--success-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700;">{{ completed_orders }}</div>
+                    <div style="color: var(--text-secondary);">Completed</div>
+                </div>
+            </div>
+
+            <!-- Total Earnings -->
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="width: 60px; height: 60px; background: var(--warning-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 700;">KES {{ total_earnings|floatformat:0 }}</div>
+                    <div style="color: var(--text-secondary);">Total Earnings</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid" style="grid-template-columns: 2fr 1fr; gap: var(--spacing-xxl);">
+            <!-- Recent Orders & Services -->
+            <div>
+                <!-- Pending Orders -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-clock"></i> Pending Orders</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for order in recent_orders %}
+                        <div style="display: flex; align-items: center; gap: var(--spacing-lg); padding: var(--spacing-lg); border-bottom: 1px solid var(--light-secondary);">
+                            <div style="width: 50px; height: 50px; background: var(--warning-color); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+
+                            <div style="flex: 1;">
+                                <h6 style="margin: 0;">{{ order.service_name }}</h6>
+                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                                    {{ order.client_name }} • {{ order.created_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+
+                            <div class="text-right">
+                                <div style="font-weight: 600;">KES {{ order.total_amount|floatformat:0 }}</div>
+                                <button class="btn btn-sm btn-primary" onclick="updateOrderStatus('{{ order.id }}', 'confirmed')">
+                                    Confirm
+                                </button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center" style="padding: var(--spacing-xxl); color: var(--text-secondary);">
+                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: var(--spacing-lg);"></i>
+                            <h4>No pending orders</h4>
+                            <p>All caught up! New orders will appear here.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- My Services -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-tools"></i> My Services</h5>
+                            <a href="#" class="btn btn-primary btn-sm">Add New Service</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-lg);">
+                            <div class="service-card">
+                                <div style="height: 150px; background: var(--light-secondary); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-secondary);">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div class="service-content">
+                                    <div class="service-title">House Cleaning</div>
+                                    <div class="service-rating">
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half"></i>
+                                        </div>
+                                        <span style="font-size: 0.875rem;">4.8 (23 reviews)</span>
+                                    </div>
+                                    <div class="service-price">KES 3,500</div>
+                                    <div class="d-flex gap-2 mt-2">
+                                        <button class="btn btn-sm btn-outline" style="flex: 1;">Edit</button>
+                                        <button class="btn btn-sm btn-outline" style="flex: 1;">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                            <a href="#" class="btn btn-outline" style="justify-content: flex-start;">
+                                <i class="fas fa-plus"></i> Add Service
+                            </a>
+                            <a href="#" class="btn btn-outline" style="justify-content: flex-start;">
+                                <i class="fas fa-chart-bar"></i> Analytics
+                            </a>
+                            <a href="#" class="btn btn-outline" style="justify-content: flex-start;">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <a href="{% url 'users:profile' %}" class="btn btn-outline" style="justify-content: flex-start;">
+                                <i class="fas fa-user-edit"></i> Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Earnings Overview -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-money-bill-wave"></i> Earnings This Month</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);">KES 45,000</div>
+                            <div style="color: var(--text-secondary); font-size: 0.875rem;">+12% from last month</div>
+                        </div>
+
+                        <div style="margin-top: var(--spacing-lg);">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Completed Orders</span>
+                                <span style="font-weight: 600;">12</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Average Rating</span>
+                                <span style="font-weight: 600;">4.8★</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Response Time</span>
+                                <span style="font-weight: 600;">< 2 hours</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Reviews -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-star"></i> Recent Reviews</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                            <div class="d-flex gap-3">
+                                <div style="width: 40px; height: 40px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">JD</div>
+                                <div style="flex: 1;">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                        </div>
+                                        <span style="font-size: 0.75rem; color: var(--text-secondary);">2 days ago</span>
+                                    </div>
+                                    <p style="font-size: 0.875rem; margin: 0;">"Excellent service! Very professional and thorough."</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <div style="width: 40px; height: 40px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">SM</div>
+                                <div style="flex: 1;">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                        </div>
+                                        <span style="font-size: 0.75rem; color: var(--text-secondary);">1 week ago</span>
+                                    </div>
+                                    <p style="font-size: 0.875rem; margin: 0;">"Great work! Will definitely book again."</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: var(--spacing-lg); text-align: center;">
+                            <a href="#" class="btn btn-outline">View All Reviews</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function updateOrderStatus(orderId, newStatus) {
+        // In a real app, this would make an API call
+        if (confirm(`Are you sure you want to mark this order as ${newStatus}?`)) {
+            // Show loading state
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Updated';
+                btn.style.background = 'var(--success-color)';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 1500);
+            }, 1000);
+        }
+    }
+</script>
+{% endblock %}

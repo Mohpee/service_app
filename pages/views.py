@@ -8,8 +8,8 @@ def homepage(request):
 
 
 def about(request):
-    pass
+    return render(request, "pages/about.html")
 
 
 def contact(request):
-    pass
+    return render(request, "pages/contact.html")

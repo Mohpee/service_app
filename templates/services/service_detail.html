@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} - Service Details{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section style="background: var(--light-primary); padding: var(--spacing-lg) 0;">
+    <div class="container">
+        <nav style="font-size: 0.875rem; color: var(--text-secondary);">
+            <a href="{% url 'pages:homepage' %}" style="color: var(--text-secondary); text-decoration: none;">Home</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <a href="{% url 'services:service-list' %}" style="color: var(--text-secondary); text-decoration: none;">Services</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <span style="color: var(--text-primary);">{{ service.name }}</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Service Details Section -->
+<section style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-xxl); align-items: start;">
+            <!-- Service Images -->
+            <div>
+                <div class="card">
+                    <div style="height: 400px; background: var(--light-secondary); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--text-secondary); border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                        {% if service.image %}
+                            <img src="{{ service.image.url }}" alt="{{ service.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                        {% else %}
+                            <i class="fas fa-tools"></i>
+                        {% endif %}
+                    </div>
+
+                    <!-- Service Gallery Thumbnails (if multiple images) -->
+                    {% if service.additional_images %}
+                    <div class="card-body">
+                        <div class="d-flex gap-2" style="overflow-x: auto; padding-bottom: var(--spacing-sm);">
+                            <div style="width: 80px; height: 60px; background: var(--light-secondary); border-radius: var(--radius-md); flex-shrink: 0; cursor: pointer; border: 2px solid transparent;" onclick="changeMainImage('main')">
+                                {% if service.image %}
+                                    <img src="{{ service.image.url }}" alt="Main" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+                                {% endif %}
+                            </div>
+                            <!-- Add more thumbnails as needed -->
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Service Information -->
+            <div>
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge badge-info">{{ service.category.name }}</span>
+                        {% if service.is_available %}
+                            <span class="badge badge-success">Available</span>
+                        {% else %}
+                            <span class="badge badge-danger">Unavailable</span>
+                        {% endif %}
+                    </div>
+
+                    <h1>{{ service.name }}</h1>
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="service-rating">
+                            <div class="rating-stars">
+                                {% with ''|center:service.rating|add:'0' as range %}
+                                {% for i in range %}
+                                    {% if forloop.counter <= service.rating|floatformat:0 %}
+                                        <i class="fas fa-star"></i>
+                                    {% elif service.rating|floatformat:1|add:0.5 == forloop.counter|floatformat:1 %}
+                                        <i class="fas fa-star-half-alt"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                {% endwith %}
+                            </div>
+                            <span>{{ service.rating|floatformat:1 }} ({{ service.reviews_count }} reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="service-price" style="font-size: 2rem; margin-bottom: var(--spacing-lg);">
+                        KES {{ service.price|floatformat:0 }}
+                        {% if service.base_price %}
+                            <span style="font-size: 1rem; color: var(--text-secondary); text-decoration: line-through;">
+                                KES {{ service.base_price|floatformat:0 }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Provider Information -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0;">{{ service.provider.get_full_name|default:service.provider.username }}</h4>
+                                <p style="color: var(--text-secondary); margin: 0;">
+                                    <i class="fas fa-map-marker-alt"></i> {{ service.location }}
+                                </p>
+                                <p style="color: var(--text-secondary); margin: 0;">
+                                    <i class="fas fa-briefcase"></i> {{ service.experience_years }} years experience
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3 mb-4">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="bookService()">
+                        <i class="fas fa-calendar-plus"></i> Book Now
+                    </button>
+                    <button class="btn btn-outline" onclick="contactProvider()">
+                        <i class="fas fa-message"></i> Contact
+                    </button>
+                    <button class="btn btn-outline" onclick="toggleFavorite()">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
+
+                <!-- Quick Booking Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-calendar-alt"></i> Quick Booking</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="booking-form">
+                            <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                                <div class="form-group">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-input" id="booking-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" class="form-input" id="booking-time" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Special Requirements</label>
+                                <textarea class="form-input" rows="3" placeholder="Any special instructions or requirements..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-check"></i> Confirm Booking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Description & Details -->
+        <div class="d-grid" style="grid-template-columns: 2fr 1fr; gap: var(--spacing-xxl); margin-top: var(--spacing-xxl);">
+            <!-- Description -->
+            <div>
+                <h3>Description</h3>
+                <div style="color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--spacing-xl);">
+                    {{ service.description|linebreaks }}
+                </div>
+
+                <!-- Packages (if available) -->
+                {% if service.has_packages %}
+                <h3>Packages</h3>
+                <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
+                    <!-- Basic Package -->
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5>Basic</h5>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color); margin: var(--spacing-md) 0;">
+                                KES 2,500
+                            </div>
+                            <ul style="text-align: left; list-style: none; padding: 0;">
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> Up to 2 hours</li>
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> Basic cleaning</li>
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> 1 bedroom</li>
+                            </ul>
+                            <button class="btn btn-outline" style="width: 100%; margin-top: var(--spacing-md);">Select</button>
+                        </div>
+                    </div>
+
+                    <!-- Standard Package -->
+                    <div class="card" style="border: 2px solid var(--primary-color);">
+                        <div class="card-body text-center">
+                            <div style="position: absolute; top: -10px; right: 10px;">
+                                <span class="badge badge-primary">Popular</span>
+                            </div>
+                            <h5>Standard</h5>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color); margin: var(--spacing-md) 0;">
+                                KES 4,000
+                            </div>
+                            <ul style="text-align: left; list-style: none; padding: 0;">
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> Up to 4 hours</li>
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> Deep cleaning</li>
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> 2 bedrooms</li>
+                                <li><i class="fas fa-check" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i> Kitchen & bathroom</li>
+                            </ul>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-md);">Select</button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Reviews Section -->
+                <h3>Reviews & Ratings</h3>
+                <div class="d-flex gap-4 mb-4">
+                    <div class="text-center">
+                        <div style="font-size: 3rem; font-weight: 700;">{{ service.rating|floatformat:1 }}</div>
+                        <div class="rating-stars" style="font-size: 1.5rem;">
+                            {% with ''|center:service.rating|add:'0' as range %}
+                            {% for i in range %}
+                                {% if forloop.counter <= service.rating|floatformat:0 %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                        <div style="color: var(--text-secondary);">{{ service.reviews_count }} reviews</div>
+                    </div>
+
+                    <!-- Rating Breakdown -->
+                    <div style="flex: 1;">
+                        {% for i in "54321" %}
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span style="font-size: 0.875rem;">{{ i }}★</span>
+                            <div style="flex: 1; height: 8px; background: var(--light-secondary); border-radius: var(--radius-full);">
+                                <div class="rating-bar" style="height: 100%; background: #ffd700; border-radius: var(--radius-full);" data-width="{% if i == 5 %}80{% elif i == 4 %}60{% elif i == 3 %}30{% elif i == 2 %}10{% else %}5{% endif %}"></div>
+                            </div>
+                            <span style="font-size: 0.875rem;">{% if i == 5 %}80{% elif i == 4 %}60{% elif i == 3 %}30{% elif i == 2 %}10{% else %}5{% endif %}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Individual Reviews -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex gap-3">
+                            <div style="width: 50px; height: 50px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">JD</div>
+                            <div style="flex: 1;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 style="margin: 0;">John Doe</h6>
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-sm);">2 weeks ago</p>
+                                <p>Excellent service! Very professional and thorough. Would definitely recommend.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div>
+                <!-- Service Stats -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-info-circle"></i> Service Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                            <div class="d-flex justify-content-between">
+                                <span>Total Bookings:</span>
+                                <span style="font-weight: 600;">{{ service.total_bookings }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Experience:</span>
+                                <span style="font-weight: 600;">{{ service.experience_years }} years</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Location:</span>
+                                <span style="font-weight: 600;">{{ service.location }}</span>
+                            </div>
+                            {% if service.languages %}
+                            <div class="d-flex justify-content-between">
+                                <span>Languages:</span>
+                                <span style="font-weight: 600;">{{ service.languages|join:", " }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety & Trust -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-shield-alt"></i> Safety & Trust</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-check-circle" style="color: var(--success-color); font-size: 1.25rem;"></i>
+                                <div>
+                                    <div style="font-weight: 600;">Verified Professional</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Background checked and verified</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-award" style="color: var(--warning-color); font-size: 1.25rem;"></i>
+                                <div>
+                                    <div style="font-weight: 600;">Quality Guarantee</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">100% satisfaction or money back</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-headset" style="color: var(--info-color); font-size: 1.25rem;"></i>
+                                <div>
+                                    <div style="font-weight: 600;">24/7 Support</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Get help whenever you need it</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function bookService() {
+        // Scroll to booking form
+        document.getElementById('booking-form').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+
+        // Focus on date input
+        document.getElementById('booking-date').focus();
+    }
+
+    function contactProvider() {
+        // In a real app, this would open a chat or contact form
+        alert('Contact feature coming soon!');
+    }
+
+    function toggleFavorite() {
+        // In a real app, this would add/remove from favorites
+        const btn = event.target.closest('button');
+        const icon = btn.querySelector('i');
+
+        if (icon.classList.contains('far')) {
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            btn.style.color = '#ff3b30';
+        } else {
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+            btn.style.color = '';
+        }
+    }
+
+    function changeMainImage(imageSrc) {
+        const mainImage = document.querySelector('.service-image');
+        mainImage.src = imageSrc;
+    }
+
+    // Set minimum date for booking and rating bars
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('booking-date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+
+        // Set rating bar widths
+        document.querySelectorAll('.rating-bar').forEach(bar => {
+            const width = bar.getAttribute('data-width') + '%';
+            bar.style.width = width;
+        });
+
+        // Handle booking form submission
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // In a real app, this would submit the booking
+            alert('Booking feature coming soon!');
+
+            // Show success message
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Booked!';
+            btn.style.background = 'var(--success-color)';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}
