@@ -1,56 +1,99 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: service_app
-      POSTGRES_USER: service_user
-      POSTGRES_PASSWORD: service_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  app:
+  # Django Application
+  web:
     build: .
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://service_user:service_password@db:5432/service_app
-      - REDIS_URL=redis://redis:6379/1
-      - SECRET_KEY=your-secret-key-here
-      - DEBUG=False
-      - ALLOWED_HOSTS=localhost,127.0.0.1
-    depends_on:
-      - db
-      - redis
+    command: gunicorn service_app.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=service_app.settings
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - servicehub
 
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=servicehub
+      - POSTGRES_USER=servicehub_user
+      - POSTGRES_PASSWORD=servicehub_password
+    ports:
+      - "5432:5432"
+    networks:
+      - servicehub
+
+  # Redis for caching and Celery
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - servicehub
+
+  # Celery Worker
+  celery:
+    build: .
+    command: celery -A service_app worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=service_app.settings
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - servicehub
+
+  # Celery Beat (for scheduled tasks)
+  celery-beat:
+    build: .
+    command: celery -A service_app beat -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=service_app.settings
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - servicehub
+
+  # Nginx (for production)
   nginx:
     image: nginx:alpine
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     depends_on:
-      - app
+      - web
+    networks:
+      - servicehub
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+
+networks:
+  servicehub:
+    driver: bridge

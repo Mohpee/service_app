@@ -6,14 +6,16 @@ from rest_framework.decorators import action
 from django.db.models import Q, Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework.renderers import JSONRenderer
 from .models import Service, Category, ServicePackage, FavoriteService, ProviderSchedule, Promotion
 from .serializers import ServiceSerializer, CategorySerializer, ServicePackageSerializer, FavoriteServiceSerializer, ProviderScheduleSerializer, PromotionSerializer
 from users.permissions import IsProvider, CanManageService
 
-class ServiceListCreateView(generics.ListCreateAPIView):
+class ServiceListView(generics.ListAPIView):
+    """List services for web interface"""
     queryset = Service.objects.filter(is_available=True)
     serializer_class = ServiceSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category', 'location', 'is_available']
     search_fields = ['name', 'description', 'location']
@@ -43,6 +45,155 @@ class ServiceListCreateView(generics.ListCreateAPIView):
 
         return queryset
 
+def services_list(request):
+    """Template view for services list page"""
+    from django.core.paginator import Paginator
+
+    # Get services with filters
+    services = Service.objects.filter(is_available=True).order_by('-rating', '-created_at')
+
+    # Apply filters from request
+    category = request.GET.get('category')
+    location = request.GET.get('location')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    min_rating = request.GET.get('min_rating')
+    sort_by = request.GET.get('sort_by', 'relevance')
+
+    if category:
+        # Filter by category name instead of ID
+        services = services.filter(category__name__iexact=category)
+    if location:
+        services = services.filter(location__icontains=location)
+    if min_price:
+        services = services.filter(price__gte=min_price)
+    if max_price:
+        services = services.filter(price__lte=max_price)
+    if min_rating:
+        services = services.filter(rating__gte=min_rating)
+
+    # Apply sorting
+    if sort_by == 'price_low':
+        services = services.order_by('price')
+    elif sort_by == 'price_high':
+        services = services.order_by('-price')
+    elif sort_by == 'rating':
+        services = services.order_by('-rating')
+    elif sort_by == 'newest':
+        services = services.order_by('-created_at')
+    elif sort_by == 'popular':
+        services = services.order_by('-total_bookings')
+    # else: relevance (default ordering)
+
+    # Pagination
+    paginator = Paginator(services, 12)  # 12 services per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Get categories for filter
+    from .models import Category
+    categories = Category.objects.all()
+
+    context = {
+        'services': page_obj,
+        'categories': categories,
+        'request': request,
+    }
+
+    return render(request, 'services/service_list.html', context)
+
+class ServiceListCreateView(generics.ListCreateAPIView):
+    queryset = Service.objects.filter(is_available=True)
+    serializer_class = ServiceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category', 'location', 'is_available']
+    search_fields = ['name', 'description', 'location']
+    ordering_fields = ['price', 'rating', 'created_at', 'total_bookings']
+    ordering = ['-rating', '-created_at']
+    renderer_classes = [JSONRenderer]  # Force JSON response only
+
+    def get_queryset(self):
+        queryset = Service.objects.filter(is_available=True)
+
+        # Filter by price range
+        min_price = self.request.query_params.get('min_price')
+        max_price = self.request.query_params.get('max_price')
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+
+        # Filter by rating
+        min_rating = self.request.query_params.get('min_rating')
+        if min_rating:
+            queryset = queryset.filter(rating__gte=min_rating)
+
+        # Filter by provider type
+        provider_type = self.request.query_params.get('provider_type')
+        if provider_type:
+            queryset = queryset.filter(provider__account_type=provider_type)
+    
+        return queryset
+    
+    def services_list(request):
+        """Template view for services list page"""
+        from django.core.paginator import Paginator
+    
+        # Get services with filters
+        services = Service.objects.filter(is_available=True).order_by('-rating', '-created_at')
+    
+        # Apply filters from request
+        category = request.GET.get('category')
+        location = request.GET.get('location')
+        min_price = request.GET.get('min_price')
+        max_price = request.GET.get('max_price')
+        min_rating = request.GET.get('min_rating')
+        sort_by = request.GET.get('sort_by', 'relevance')
+    
+        if category:
+            # Filter by category name instead of ID
+            services = services.filter(category__name__iexact=category)
+    
+        if location:
+            services = services.filter(location__icontains=location)
+        if min_price:
+            services = services.filter(price__gte=min_price)
+        if max_price:
+            services = services.filter(price__lte=max_price)
+        if min_rating:
+            services = services.filter(rating__gte=min_rating)
+    
+        # Apply sorting
+        if sort_by == 'price_low':
+            services = services.order_by('price')
+        elif sort_by == 'price_high':
+            services = services.order_by('-price')
+        elif sort_by == 'rating':
+            services = services.order_by('-rating')
+        elif sort_by == 'newest':
+            services = services.order_by('-created_at')
+        elif sort_by == 'popular':
+            services = services.order_by('-total_bookings')
+        # else: relevance (default ordering)
+    
+        # Pagination
+        paginator = Paginator(services, 12)  # 12 services per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+    
+        # Get categories for filter
+        from .models import Category
+        categories = Category.objects.all()
+    
+        context = {
+            'services': page_obj,
+            'categories': categories,
+            'request': request,
+        }
+    
+        return render(request, 'services/service_list.html', context)
+
     def perform_create(self, serializer):
         serializer.save(provider=self.request.user)
 
@@ -56,19 +207,31 @@ class ServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
             return [CanManageService()]
         return [permissions.IsAuthenticatedOrReadOnly()]
 
+    def get(self, request, *args, **kwargs):
+        # Check if this is an API request (JSON format)
+        if request.accepted_renderer.format == 'json' or 'format=json' in request.GET.get('format', ''):
+            return super().get(request, *args, **kwargs)
+
+        # Otherwise, render HTML template
+        service = self.get_object()
+        return render(request, 'services/service_detail.html', {'service': service})
+
 class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
 class ServiceSearchView(APIView):
     """Advanced service search with multiple filters"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get(self, request):
         query = request.query_params.get('q', '')
@@ -88,7 +251,8 @@ class ServiceSearchView(APIView):
             )
 
         if category:
-            services = services.filter(category_id=category)
+            # Filter by category name instead of ID
+            services = services.filter(category__name__iexact=category)
 
         if location:
             services = services.filter(location__icontains=location)
@@ -112,6 +276,7 @@ class ProviderServicesView(generics.ListAPIView):
     """List services by a specific provider"""
     serializer_class = ServiceSerializer
     permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get_queryset(self):
         provider_id = self.kwargs['provider_id']
@@ -120,6 +285,7 @@ class ProviderServicesView(generics.ListAPIView):
 class NearbyServicesView(APIView):
     """Find services near a location"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get(self, request):
         latitude = request.query_params.get('lat')
@@ -148,6 +314,7 @@ class ServicePackageListCreateView(generics.ListCreateAPIView):
     """List and create service packages"""
     serializer_class = ServicePackageSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get_queryset(self):
         service_id = self.request.query_params.get('service')
@@ -164,6 +331,7 @@ class ServicePackageListCreateView(generics.ListCreateAPIView):
 class FavoriteServiceView(APIView):
     """Add/remove favorite services"""
     permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def post(self, request, service_id):
         from .models import Service
@@ -194,6 +362,7 @@ class ProviderScheduleView(generics.ListCreateAPIView):
     """Manage provider schedules"""
     serializer_class = ProviderScheduleSerializer
     permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get_queryset(self):
         return ProviderSchedule.objects.filter(provider=self.request.user)
@@ -205,6 +374,7 @@ class PromotionListView(generics.ListCreateAPIView):
     """List and create promotions"""
     serializer_class = PromotionSerializer
     permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get_queryset(self):
         user = self.request.user
@@ -221,6 +391,7 @@ class PromotionListView(generics.ListCreateAPIView):
 class AdvancedSearchView(APIView):
     """Advanced search with multiple criteria"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get(self, request):
         # Get all search parameters
@@ -250,7 +421,8 @@ class AdvancedSearchView(APIView):
 
         # Category filter
         if category:
-            services = services.filter(category_id=category)
+            # Filter by category name instead of ID
+            services = services.filter(category__name__iexact=category)
 
         # Location filter
         if location:
@@ -320,6 +492,7 @@ class AdvancedSearchView(APIView):
 class SearchSuggestionsView(APIView):
     """Get search suggestions and popular searches"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get(self, request):
         query = request.query_params.get('q', '')
@@ -366,6 +539,7 @@ class SearchSuggestionsView(APIView):
 class ServiceRecommendationsView(APIView):
     """Get personalized service recommendations"""
     permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [JSONRenderer]  # Force JSON response only
 
     def get(self, request):
         user = request.user

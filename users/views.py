@@ -17,6 +17,10 @@ class UserLoginView(LoginView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('pages:homepage')
 
+    def form_invalid(self, form):
+        """Handle invalid login attempts"""
+        return super().form_invalid(form)
+
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('pages:homepage')
 
@@ -29,6 +33,7 @@ class UserRegistrationView(APIView):
 
     def post(self, request):
         """Handle registration form submission"""
+        print("Registration data received:", request.data)  # Debug print
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -37,11 +42,49 @@ class UserRegistrationView(APIView):
                 'message': 'Registration successful!',
                 'redirect_url': '/'
             }, status=status.HTTP_201_CREATED)
+        print("Serializer errors:", serializer.errors)  # Debug print
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserProfileView(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserProfileSerializer
+
+    def get(self, request, *args, **kwargs):
+        # Check if this is an API request (JSON format)
+        if request.accepted_renderer.format == 'json' or 'format=json' in request.GET.get('format', ''):
+            return super().get(request, *args, **kwargs)
+
+        # Otherwise, render HTML template
+        user = self.get_object()
+        # Calculate statistics based on user type
+        if user.account_type == 'client':
+            services_count = 0
+            orders_count = user.orders.count()
+            completed_orders = user.orders.filter(status='completed').count()
+            reviews_count = 0
+            average_rating = 0
+        elif user.account_type in ['provider', 'business']:
+            services_count = user.services.count()
+            orders_count = user.provided_orders.count()
+            completed_orders = user.provided_orders.filter(status='completed').count()
+            reviews_count = user.received_reviews.count()
+            average_rating = user.average_rating
+        else:
+            services_count = 0
+            orders_count = 0
+            completed_orders = 0
+            reviews_count = 0
+            average_rating = 0
+
+        context = {
+            'user': user,
+            'services_count': services_count,
+            'orders_count': orders_count,
+            'completed_orders': completed_orders,
+            'reviews_count': reviews_count,
+            'average_rating': average_rating,
+        }
+        return render(request, 'users/profile.html', context)
 
     def get_object(self):
         return self.request.user
@@ -49,6 +92,17 @@ class UserProfileView(generics.RetrieveAPIView):
 class UserProfileUpdateView(generics.UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserProfileUpdateSerializer
+
+    def get(self, request, *args, **kwargs):
+        # Check if this is an API request (JSON format)
+        if request.accepted_renderer.format == 'json' or 'format=json' in request.GET.get('format', ''):
+            return Response(self.get_serializer(self.get_object()).data)
+
+        # Otherwise, render HTML template
+        return render(request, 'users/profile_update.html', {
+            'user': request.user,
+            'form': self.get_serializer(self.get_object())
+        })
 
     def get_object(self):
         return self.request.user
@@ -108,14 +162,18 @@ class ProviderDashboardView(APIView):
         orders_count = user.provided_orders.count()
         completed_orders = user.provided_orders.filter(status='completed').count()
         total_earnings = sum(order.total_amount for order in user.provided_orders.filter(status='completed'))
+        recent_orders = user.provided_orders.all()[:5]
 
-        return Response({
+        context = {
+            'user': user,
             'services_count': services_count,
             'orders_count': orders_count,
             'completed_orders': completed_orders,
             'total_earnings': total_earnings,
-            'recent_orders': UserProfileSerializer(user.provided_orders.all()[:5], many=True).data
-        })
+            'recent_orders': recent_orders,
+        }
+
+        return render(request, 'users/provider_dashboard.html', context)
 
 class ClientDashboardView(APIView):
     """Dashboard view for clients"""
@@ -127,14 +185,22 @@ class ClientDashboardView(APIView):
         # Get client statistics
         orders_count = user.orders.count()
         completed_orders = user.orders.filter(status='completed').count()
+        pending_orders = user.orders.filter(status__in=['pending', 'confirmed']).count()
         total_spent = sum(order.total_amount for order in user.orders.filter(status='completed'))
 
-        return Response({
+        # Get recent orders
+        recent_orders = user.orders.all()[:5]
+
+        context = {
+            'user': user,
             'orders_count': orders_count,
             'completed_orders': completed_orders,
+            'pending_orders': pending_orders,
             'total_spent': total_spent,
-            'recent_orders': UserProfileSerializer(user.orders.all()[:5], many=True).data
-        })
+            'recent_orders': recent_orders,
+        }
+
+        return render(request, 'users/client_dashboard.html', context)
 
 class BusinessProfileView(generics.RetrieveUpdateAPIView):
     """View for managing business profiles"""

@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Profile - ServiceHub{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section style="background: var(--light-primary); padding: var(--spacing-lg) 0;">
+    <div class="container">
+        <nav style="font-size: 0.875rem; color: var(--text-secondary);">
+            <a href="{% url 'pages:homepage' %}" style="color: var(--text-secondary); text-decoration: none;">Home</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <a href="{% url 'users:client-dashboard' %}" style="color: var(--text-secondary); text-decoration: none;">Dashboard</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <span style="color: var(--text-primary);">Update Profile</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Profile Update Section -->
+<section style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-edit"></i> Update Your Profile</h3>
+                        <p style="color: var(--text-secondary); margin: 0;">Keep your profile information up to date</p>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" id="profile-form">
+                            {% csrf_token %}
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }}" style="margin-bottom: var(--spacing-lg);">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- Profile Picture -->
+                            <div class="text-center mb-4">
+                                <div style="position: relative; display: inline-block;">
+                                    {% if user.profile_picture %}
+                                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color);">
+                                    {% else %}
+                                        <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--light-secondary); display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary-color); font-size: 3rem; color: var(--text-secondary);">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    {% endif %}
+                                    <label for="id_profile_picture" style="position: absolute; bottom: 0; right: 0; background: var(--primary-color); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md);">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*" style="display: none;">
+                                </div>
+                                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-top: var(--spacing-sm);">
+                                    Click the camera icon to update your profile picture
+                                </p>
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">First Name</label>
+                                        <input type="text" name="first_name" class="form-input" value="{{ user.first_name }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Last Name</label>
+                                        <input type="text" name="last_name" class="form-input" value="{{ user.last_name }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-input" value="{{ user.email }}" readonly style="background: var(--light-secondary);">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                            Email cannot be changed. Contact support if needed.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Phone Number</label>
+                                        <input type="tel" name="phone_number" class="form-input" value="{{ user.phone_number }}" placeholder="+254 XXX XXX XXX">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                            Used for service bookings and notifications
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bio -->
+                            <div class="form-group">
+                                <label class="form-label">Bio</label>
+                                <textarea name="bio" class="form-input" rows="4" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                    Share information about yourself that might be relevant to service providers or clients.
+                                </div>
+                            </div>
+
+                            <!-- Account Information (Read-only) -->
+                            <div class="card" style="background: var(--light-primary); margin-top: var(--spacing-xl);">
+                                <div class="card-body">
+                                    <h5>Account Information</h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div style="margin-bottom: var(--spacing-md);">
+                                                <strong>Username:</strong> {{ user.username }}
+                                            </div>
+                                            <div style="margin-bottom: var(--spacing-md);">
+                                                <strong>Account Type:</strong>
+                                                <span class="badge badge-primary">{{ user.get_account_type_display }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div style="margin-bottom: var(--spacing-md);">
+                                                <strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}
+                                            </div>
+                                            <div>
+                                                <strong>Last Updated:</strong> {{ user.updated_at|date:"M d, Y" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Buttons -->
+                            <div class="d-flex gap-3 justify-content-end" style="margin-top: var(--spacing-xl);">
+                                <a href="{% url 'users:client-dashboard' %}" class="btn btn-outline">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-lock"></i> Change Password</h5>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                            Want to change your password? You can do so securely here.
+                        </p>
+                        <a href="#" onclick="alert('Password change feature coming soon!')" class="btn btn-outline">
+                            <i class="fas fa-key"></i> Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Preview profile picture before upload
+    document.getElementById('id_profile_picture').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Update the preview image
+                const previewImg = document.querySelector('.text-center img');
+                if (previewImg) {
+                    previewImg.src = e.target.result;
+                } else {
+                    // Replace the icon with an image
+                    const iconDiv = document.querySelector('.text-center div[style*="width: 120px"]');
+                    if (iconDiv) {
+                        iconDiv.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color);">`;
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form validation
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        const firstName = document.querySelector('input[name="first_name"]').value.trim();
+        const lastName = document.querySelector('input[name="last_name"]').value.trim();
+
+        if (!firstName || !lastName) {
+            e.preventDefault();
+            alert('Please fill in your first and last name.');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        submitBtn.disabled = true;
+
+        // Let the form submit normally
+    });
+</script>
+{% endblock %}

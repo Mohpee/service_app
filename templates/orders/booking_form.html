@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Service - {{ service.name }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section style="background: var(--light-primary); padding: var(--spacing-lg) 0;">
+    <div class="container">
+        <nav style="font-size: 0.875rem; color: var(--text-secondary);">
+            <a href="{% url 'pages:homepage' %}" style="color: var(--text-secondary); text-decoration: none;">Home</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <a href="{% url 'services:service-list' %}" style="color: var(--text-secondary); text-decoration: none;">Services</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <a href="{% url 'services:service-detail' service.id %}" style="color: var(--text-secondary); text-decoration: none;">{{ service.name }}</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <span style="color: var(--text-primary);">Book Service</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Booking Form Section -->
+<section style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-xxl); align-items: start;">
+            <!-- Service Summary -->
+            <div>
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Service Details</h3>
+
+                        <div class="d-flex gap-3 mb-4">
+                            <div style="width: 80px; height: 80px; background: var(--light-secondary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-secondary);">
+                                {% if service.image %}
+                                    <img src="{{ service.image.url }}" alt="{{ service.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md);">
+                                {% else %}
+                                    <i class="fas fa-tools"></i>
+                                {% endif %}
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="margin-bottom: var(--spacing-sm);">{{ service.name }}</h4>
+                                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">
+                                    <i class="fas fa-user"></i> {{ service.provider.get_full_name|default:service.provider.username }}
+                                </p>
+                                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">
+                                    <i class="fas fa-map-marker-alt"></i> {{ service.location }}
+                                </p>
+                                <div class="service-rating" style="margin-bottom: var(--spacing-sm);">
+                                    <div class="rating-stars">
+                                        {% with ''|center:service.rating|add:'0' as range %}
+                                        {% for i in range %}
+                                            {% if forloop.counter <= service.rating|floatformat:0 %}
+                                                <i class="fas fa-star"></i>
+                                            {% elif service.rating|floatformat:1|add:0.5 == forloop.counter|floatformat:1 %}
+                                                <i class="fas fa-star-half-alt"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% endwith %}
+                                    </div>
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ service.rating|floatformat:1 }} ({{ service.reviews_count }} reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--light-secondary); padding-top: var(--spacing-lg);">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>Service Price:</span>
+                                <span style="font-size: 1.25rem; font-weight: 600; color: var(--success-color);">KES {{ service.price|floatformat:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Duration:</span>
+                                <span>{{ service.duration_hours }} hour{{ service.duration_hours|pluralize }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Description -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5>Description</h5>
+                        <p style="color: var(--text-secondary); line-height: 1.6;">{{ service.description }}</p>
+
+                        {% if service.qualifications %}
+                        <h6 class="mt-3">Qualifications</h6>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">{{ service.qualifications }}</p>
+                        {% endif %}
+
+                        {% if service.languages %}
+                        <h6 class="mt-3">Languages</h6>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">{{ service.languages|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-calendar-plus"></i> Book This Service</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="booking-form">
+                            {% csrf_token %}
+
+                            <!-- Date Selection -->
+                            <div class="form-group">
+                                <label class="form-label">Preferred Date</label>
+                                <input type="date" name="scheduled_date" class="form-input" required id="booking-date">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                    Select your preferred service date
+                                </div>
+                            </div>
+
+                            <!-- Time Selection -->
+                            <div class="form-group">
+                                <label class="form-label">Preferred Time</label>
+                                <input type="time" name="scheduled_time" class="form-input" id="booking-time">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                    Select your preferred service time (optional)
+                                </div>
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="form-group">
+                                <label class="form-label">Quantity</label>
+                                <select name="quantity" class="form-input" required>
+                                    <option value="1">1 service</option>
+                                    <option value="2">2 services</option>
+                                    <option value="3">3 services</option>
+                                    <option value="4">4 services</option>
+                                    <option value="5">5 services</option>
+                                </select>
+                            </div>
+
+                            <!-- Service Location -->
+                            <div class="form-group">
+                                <label class="form-label">Service Location</label>
+                                <input type="text" name="service_location" class="form-input" placeholder="Where should the service be provided?" required>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                    Address or location details
+                                </div>
+                            </div>
+
+                            <!-- Special Requirements -->
+                            <div class="form-group">
+                                <label class="form-label">Special Requirements (Optional)</label>
+                                <textarea name="special_requirements" class="form-input" rows="3" placeholder="Any special instructions or requirements..."></textarea>
+                            </div>
+
+                            <!-- Additional Notes -->
+                            <div class="form-group">
+                                <label class="form-label">Additional Notes (Optional)</label>
+                                <textarea name="notes" class="form-input" rows="2" placeholder="Any additional notes..."></textarea>
+                            </div>
+
+                            <!-- Terms Agreement -->
+                            <div class="form-group">
+                                <label style="display: flex; align-items: flex-start; gap: var(--spacing-sm); cursor: pointer; font-size: 0.875rem;">
+                                    <input type="checkbox" required style="margin-top: 0.125rem;">
+                                    <span>I agree to the <a href="#" style="color: var(--primary-color); text-decoration: none;">Terms of Service</a> and understand the booking process</span>
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-lg);">
+                                <i class="fas fa-check"></i> Confirm Booking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5>Booking Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                            <div class="d-flex justify-content-between">
+                                <span>Service:</span>
+                                <span style="font-weight: 600;">{{ service.name }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Provider:</span>
+                                <span>{{ service.provider.get_full_name|default:service.provider.username }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Base Price:</span>
+                                <span>KES {{ service.price|floatformat:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Duration:</span>
+                                <span>{{ service.duration_hours }} hour{{ service.duration_hours|pluralize }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span style="font-weight: 600;">Total (estimated):</span>
+                                <span style="font-weight: 700; color: var(--success-color);" id="total-price">KES {{ service.price|floatformat:0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Set minimum date for booking
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('booking-date');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+        }
+
+        // Update total price when quantity changes
+        const quantitySelect = document.querySelector('select[name="quantity"]');
+        if (quantitySelect) {
+            quantitySelect.addEventListener('change', function() {
+                const quantity = parseInt(this.value);
+                const basePrice = parseFloat('{{ service.price|default:0 }}');
+                const total = quantity * basePrice;
+                const totalPriceElement = document.getElementById('total-price');
+                if (totalPriceElement) {
+                    totalPriceElement.textContent = 'KES ' + total.toLocaleString();
+                }
+            });
+        }
+
+        // Handle form submission
+        const bookingForm = document.getElementById('booking-form');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    submitBtn.disabled = true;
+                }
+
+                // Prepare form data
+                const formData = new FormData(this);
+
+                // Send booking request
+                fetch('{% url "orders:order-booking" service.id %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.id || data.message) {
+                        // Success - redirect to order success page
+                        window.location.href = '/orders/book/{{ service.id }}/success/';
+                    } else {
+                        // Show error
+                        var errorMessage = 'Booking failed:\n';
+                        for (var field in data) {
+                            if (Array.isArray(data[field])) {
+                                errorMessage += field + ': ' + data[field].join(', ') + '\n';
+                            } else {
+                                errorMessage += field + ': ' + data[field] + '\n';
+                            }
+                        }
+                        alert(errorMessage);
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                })
+                .finally(function() {
+                    // Reset button state
+                    if (submitBtn) {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

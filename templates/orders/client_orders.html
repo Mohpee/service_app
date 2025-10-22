@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - ServiceHub{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section style="background: var(--light-primary); padding: var(--spacing-lg) 0;">
+    <div class="container">
+        <nav style="font-size: 0.875rem; color: var(--text-secondary);">
+            <a href="{% url 'pages:homepage' %}" style="color: var(--text-secondary); text-decoration: none;">Home</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <a href="{% url 'users:client-dashboard' %}" style="color: var(--text-secondary); text-decoration: none;">Dashboard</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <span style="color: var(--text-primary);">My Orders</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Orders Section -->
+<section style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1>My Orders</h1>
+                <p style="color: var(--text-secondary); margin: 0;">Track and manage all your service bookings</p>
+            </div>
+            <a href="{% url 'services:service-list' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Book New Service
+            </a>
+        </div>
+
+        <!-- Orders Filter Tabs -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                    <button class="btn btn-outline filter-btn active" data-filter="all">
+                        <i class="fas fa-list"></i> All Orders ({{ orders|length }})
+                    </button>
+                    <button class="btn btn-outline filter-btn" data-filter="pending">
+                        <i class="fas fa-clock"></i> Pending
+                    </button>
+                    <button class="btn btn-outline filter-btn" data-filter="confirmed">
+                        <i class="fas fa-check-circle"></i> Confirmed
+                    </button>
+                    <button class="btn btn-outline filter-btn" data-filter="in_progress">
+                        <i class="fas fa-cog"></i> In Progress
+                    </button>
+                    <button class="btn btn-outline filter-btn" data-filter="completed">
+                        <i class="fas fa-check-double"></i> Completed
+                    </button>
+                    <button class="btn btn-outline filter-btn" data-filter="cancelled">
+                        <i class="fas fa-times"></i> Cancelled
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders List -->
+        {% if orders %}
+            <div class="d-grid gap-4" id="orders-container">
+                {% for order in orders %}
+                <div class="card order-card" data-status="{{ order.status }}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex gap-3">
+                                <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-1">{{ order.service.name }}</h4>
+                                    <p class="mb-1" style="color: var(--text-secondary);">
+                                        <i class="fas fa-user"></i> {{ order.provider.get_full_name|default:order.provider.username }}
+                                    </p>
+                                    <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">
+                                        <i class="fas fa-calendar"></i> Ordered on {{ order.created_at|date:"M d, Y" }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div style="font-size: 1.25rem; font-weight: 700; color: var(--success-color); margin-bottom: var(--spacing-sm);">
+                                    KES {{ order.total_amount|floatformat:0 }}
+                                </div>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge" style="background: var(--warning-color);">Pending</span>
+                                {% elif order.status == 'confirmed' %}
+                                    <span class="badge" style="background: var(--info-color);">Confirmed</span>
+                                {% elif order.status == 'in_progress' %}
+                                    <span class="badge" style="background: var(--secondary-color);">In Progress</span>
+                                {% elif order.status == 'completed' %}
+                                    <span class="badge" style="background: var(--success-color);">Completed</span>
+                                {% elif order.status == 'cancelled' %}
+                                    <span class="badge" style="background: var(--danger-color);">Cancelled</span>
+                                {% else %}
+                                    <span class="badge" style="background: var(--text-secondary);">{{ order.status|title }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Order Details -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                    {% if order.scheduled_date %}
+                                    <div>
+                                        <strong>Scheduled Date:</strong><br>
+                                        {{ order.scheduled_date|date:"l, M d, Y" }} at {{ order.scheduled_date|time:"g:i A" }}
+                                    </div>
+                                    {% endif %}
+                                    {% if order.service_location %}
+                                    <div>
+                                        <strong>Location:</strong><br>
+                                        {{ order.service_location }}
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>Quantity:</strong> {{ order.quantity }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                    {% if order.special_requirements %}
+                                    <div>
+                                        <strong>Special Requirements:</strong><br>
+                                        {{ order.special_requirements }}
+                                    </div>
+                                    {% endif %}
+                                    {% if order.notes %}
+                                    <div>
+                                        <strong>Notes:</strong><br>
+                                        {{ order.notes }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-4" style="flex-wrap: wrap;">
+                            <a href="{% url 'orders:order-detail' order.id %}" class="btn btn-outline">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+
+                            {% if order.status == 'pending' and order.can_cancel %}
+                            <button class="btn btn-outline-danger" onclick="cancelOrder({{ order.id }})">
+                                <i class="fas fa-times"></i> Cancel Order
+                            </button>
+                            {% endif %}
+
+                            {% if order.status == 'completed' %}
+                            <button class="btn btn-outline" onclick="leaveReview({{ order.id }})">
+                                <i class="fas fa-star"></i> Leave Review
+                            </button>
+                            {% endif %}
+
+                            {% if order.status in 'confirmed,in_progress' %}
+                            <button class="btn btn-outline" onclick="contactProvider({{ order.id }})">
+                                <i class="fas fa-envelope"></i> Contact Provider
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="card">
+                <div class="card-body text-center" style="padding: var(--spacing-xxl);">
+                    <div style="font-size: 4rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg); opacity: 0.5;">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">No orders yet</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">
+                        You haven't booked any services yet. Start exploring our wide range of services!
+                    </p>
+                    <a href="{% url 'services:service-list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search"></i> Browse Services
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Filter orders by status
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const orderCards = document.querySelectorAll('.order-card');
+
+        for (var i = 0; i < filterButtons.length; i++) {
+            filterButtons[i].addEventListener('click', function() {
+                var filter = this.getAttribute('data-filter');
+
+                // Update active button
+                for (var j = 0; j < filterButtons.length; j++) {
+                    filterButtons[j].classList.remove('active');
+                }
+                this.classList.add('active');
+
+                // Filter orders
+                for (var k = 0; k < orderCards.length; k++) {
+                    if (filter === 'all' || orderCards[k].getAttribute('data-status') === filter) {
+                        orderCards[k].style.display = 'block';
+                    } else {
+                        orderCards[k].style.display = 'none';
+                    }
+                }
+            });
+        }
+    });
+
+    function cancelOrder(orderId) {
+        if (confirm('Are you sure you want to cancel this order?')) {
+            // In a real app, this would make an API call
+            alert('Order cancellation feature coming soon!');
+        }
+    }
+
+    function leaveReview(orderId) {
+        // In a real app, this would open a review modal
+        alert('Review feature coming soon!');
+    }
+
+    function contactProvider(orderId) {
+        // In a real app, this would open a messaging interface
+        alert('Messaging feature coming soon!');
+    }
+</script>
+{% endblock %}

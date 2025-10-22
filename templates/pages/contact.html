@@ -4,35 +4,32 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section style="background: var(--secondary-gradient); color: white; padding: var(--spacing-xxl) 0; position: relative; overflow: hidden;">
+<section class="contact-hero">
     <div class="container">
         <div class="text-center">
-            <h1 style="margin-bottom: var(--spacing-lg); animation: fadeInUp 1s ease-out;">Contact Us</h1>
-            <p style="opacity: 0.9; max-width: 600px; margin: 0 auto; animation: fadeInUp 1s ease-out 0.2s both;">
+            <h1>Contact Us</h1>
+            <p>
                 Have questions? Need support? We're here to help you make the most of ServiceHub.
             </p>
         </div>
     </div>
-
-    <!-- Background Pattern -->
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
 </section>
 
 <!-- Contact Section -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--light-primary);">
+<section class="contact-form-section">
     <div class="container">
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: var(--spacing-xxl); align-items: start;">
+        <div class="d-grid">
             <!-- Contact Form -->
-            <div class="card" style="box-shadow: var(--shadow-xl); border: none;">
-                <div class="card-body" style="padding: var(--spacing-xl);">
+            <div class="card">
+                <div class="card-body">
                     <div class="text-center mb-4">
-                        <h2 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Send us a Message</h2>
-                        <p style="color: var(--text-secondary);">We'll get back to you within 24 hours</p>
+                        <h2>Send us a Message</h2>
+                        <p>We'll get back to you within 24 hours</p>
                     </div>
 
                     <form id="contact-form">
                         {% csrf_token %}
-                        <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                        <div class="d-grid">
                             <div class="form-group">
                                 <label class="form-label">First Name</label>
                                 <input type="text" name="first_name" class="form-input" placeholder="Enter your first name" required>
@@ -63,10 +60,10 @@
 
                         <div class="form-group">
                             <label class="form-label">Message</label>
-                            <textarea name="message" class="form-input" rows="5" placeholder="Tell us how we can help you..." required style="resize: vertical; min-height: 120px;"></textarea>
+                            <textarea name="message" class="form-input" rows="5" placeholder="Tell us how we can help you..." required></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: var(--spacing-lg);">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i> Send Message
                         </button>
                     </form>
@@ -75,65 +72,65 @@
 
             <!-- Contact Information -->
             <div>
-                <h2 style="margin-bottom: var(--spacing-lg); color: var(--text-primary);">Get in Touch</h2>
+                <h2>Get in Touch</h2>
 
                 <!-- Contact Methods -->
-                <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                <div class="contact-info">
                     <!-- Phone -->
-                    <div class="d-flex align-items-start gap-3">
-                        <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="fas fa-phone" style="font-size: 1.5rem; color: white;"></i>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-phone"></i>
                         </div>
-                        <div>
-                            <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Phone Support</h4>
-                            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Mon-Fri: 8:00 AM - 6:00 PM</p>
-                            <p style="font-weight: 600; color: var(--text-primary);">+254 700 000 000</p>
+                        <div class="contact-info-content">
+                            <h4>Phone Support</h4>
+                            <p>Mon-Fri: 8:00 AM - 6:00 PM</p>
+                            <p>+254 700 000 000</p>
                         </div>
                     </div>
 
                     <!-- Email -->
-                    <div class="d-flex align-items-start gap-3">
-                        <div style="width: 60px; height: 60px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="fas fa-envelope" style="font-size: 1.5rem; color: white;"></i>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-envelope"></i>
                         </div>
-                        <div>
-                            <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Email Support</h4>
-                            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xs);">We respond within 24 hours</p>
-                            <p style="font-weight: 600; color: var(--text-primary);">support@servicehub.com</p>
+                        <div class="contact-info-content">
+                            <h4>Email Support</h4>
+                            <p>We respond within 24 hours</p>
+                            <p>support@servicehub.com</p>
                         </div>
                     </div>
 
                     <!-- Location -->
-                    <div class="d-flex align-items-start gap-3">
-                        <div style="width: 60px; height: 60px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="fas fa-map-marker-alt" style="font-size: 1.5rem; color: white;"></i>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
                         </div>
-                        <div>
-                            <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Office Location</h4>
-                            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Visit us at our headquarters</p>
-                            <p style="font-weight: 600; color: var(--text-primary);">Nairobi, Kenya</p>
+                        <div class="contact-info-content">
+                            <h4>Office Location</h4>
+                            <p>Visit us at our headquarters</p>
+                            <p>Nairobi, Kenya</p>
                         </div>
                     </div>
 
                     <!-- Social Media -->
-                    <div class="d-flex align-items-start gap-3">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="fas fa-share-alt" style="font-size: 1.5rem; color: white;"></i>
+                    <div class="contact-social">
+                        <div class="contact-social-icon">
+                            <i class="fas fa-share-alt"></i>
                         </div>
-                        <div>
-                            <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Follow Us</h4>
-                            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Stay connected on social media</p>
-                            <div class="d-flex gap-2">
-                                <a href="#" style="width: 40px; height: 40px; background: #1877f2; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease;">
+                        <div class="contact-social-content">
+                            <h4>Follow Us</h4>
+                            <p>Stay connected on social media</p>
+                            <div class="contact-social-links">
+                                <a href="#">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="#" style="width: 40px; height: 40px; background: #1da1f2; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <a href="#">
                                     <i class="fab fa-twitter"></i>
                                 </a>
-                                <a href="#" style="width: 40px; height: 40px; background: #e4405f; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <a href="#">
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="#" style="width: 40px; height: 40px; background: #0077b5; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <a href="#">
                                     <i class="fab fa-linkedin-in"></i>
                                 </a>
                             </div>
@@ -142,12 +139,12 @@
                 </div>
 
                 <!-- FAQ Link -->
-                <div class="card" style="margin-top: var(--spacing-xl); border: none; background: var(--primary-gradient); color: white;">
-                    <div class="card-body text-center" style="padding: var(--spacing-lg);">
-                        <i class="fas fa-question-circle" style="font-size: 2rem; margin-bottom: var(--spacing-md); opacity: 0.9;"></i>
-                        <h4 style="margin-bottom: var(--spacing-sm);">Have Questions?</h4>
-                        <p style="opacity: 0.9; margin-bottom: var(--spacing-md);">Check out our frequently asked questions</p>
-                        <a href="#" class="btn btn-outline" style="border-color: white; color: white;">
+                <div class="contact-faq-card card">
+                    <div class="card-body">
+                        <i class="fas fa-question-circle"></i>
+                        <h4>Have Questions?</h4>
+                        <p>Check out our frequently asked questions</p>
+                        <a href="#" class="btn btn-outline">
                             <i class="fas fa-external-link-alt"></i> View FAQ
                         </a>
                     </div>
@@ -158,22 +155,22 @@
 </section>
 
 <!-- Map Section -->
-<section style="padding: var(--spacing-xxl) 0; background: white;">
+<section class="contact-map-section">
     <div class="container">
         <div class="text-center mb-4">
-            <h2 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">Find Us</h2>
-            <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+            <h2>Find Us</h2>
+            <p>
                 Located in the heart of Nairobi, serving communities across Kenya and beyond.
             </p>
         </div>
 
         <!-- Map Placeholder -->
-        <div style="width: 100%; height: 400px; background: var(--light-secondary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md);">
+        <div class="contact-map-placeholder">
             <div class="text-center">
-                <i class="fas fa-map-marked-alt" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg);"></i>
-                <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">Interactive Map</h3>
-                <p style="color: var(--text-secondary);">Nairobi, Kenya - ServiceHub Headquarters</p>
-                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: var(--spacing-sm);">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Interactive Map</h3>
+                <p>Nairobi, Kenya - ServiceHub Headquarters</p>
+                <p>
                     <i class="fas fa-info-circle"></i> Map integration coming soon
                 </p>
             </div>
@@ -182,15 +179,15 @@
 </section>
 
 <!-- Support Hours -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--dark-primary); color: white;">
+<section class="contact-hours-section">
     <div class="container">
         <div class="text-center">
-            <h2 style="margin-bottom: var(--spacing-lg);">Support Hours</h2>
-            <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-xl); max-width: 800px; margin: 0 auto;">
+            <h2>Support Hours</h2>
+            <div class="d-grid">
                 <div class="text-center">
-                    <i class="fas fa-clock" style="font-size: 3rem; margin-bottom: var(--spacing-lg); opacity: 0.8;"></i>
-                    <h4 style="margin-bottom: var(--spacing-sm);">Business Hours</h4>
-                    <p style="opacity: 0.9; line-height: 1.6;">
+                    <i class="fas fa-clock"></i>
+                    <h4>Business Hours</h4>
+                    <p>
                         Monday - Friday<br>
                         8:00 AM - 6:00 PM EAT<br><br>
                         Saturday<br>
@@ -198,9 +195,9 @@
                     </p>
                 </div>
                 <div class="text-center">
-                    <i class="fas fa-headset" style="font-size: 3rem; margin-bottom: var(--spacing-lg); opacity: 0.8;"></i>
-                    <h4 style="margin-bottom: var(--spacing-sm);">Emergency Support</h4>
-                    <p style="opacity: 0.9; line-height: 1.6;">
+                    <i class="fas fa-headset"></i>
+                    <h4>Emergency Support</h4>
+                    <p>
                         24/7 Emergency Line<br>
                         For urgent service issues<br><br>
                         <strong>+254 700 000 001</strong>
@@ -210,43 +207,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-    // Form submission handling
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        submitBtn.disabled = true;
-
-        // Simulate form submission (replace with actual API call)
-        setTimeout(() => {
-            // Show success message
-            const formContainer = this.parentElement;
-            formContainer.innerHTML = `
-                <div class="text-center" style="padding: var(--spacing-xl);">
-                    <div style="width: 80px; height: 80px; background: var(--success-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg);">
-                        <i class="fas fa-check" style="font-size: 2rem; color: white;"></i>
-                    </div>
-                    <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md);">Message Sent Successfully!</h3>
-                    <p style="color: var(--text-secondary);">Thank you for contacting us. We'll get back to you within 24 hours.</p>
-                </div>
-            `;
-        }, 2000);
-    });
-
-    // Social media hover effects
-    document.querySelectorAll('.d-flex.gap-2 a').forEach(link => {
-        link.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.1)';
-        });
-        link.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
-        });
-    });
-</script>
 {% endblock %}

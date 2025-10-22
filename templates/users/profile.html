@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.get_full_name|default:user.username }} - Profile{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section class="profile-breadcrumb" style="background: var(--light-primary); padding: var(--spacing-lg) 0;">
+    <div class="container">
+        <nav style="font-size: 0.875rem; color: var(--text-secondary);">
+            <a href="{% url 'pages:homepage' %}" style="color: var(--text-secondary); text-decoration: none;">Home</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <a href="{% url 'users:client-dashboard' %}" style="color: var(--text-secondary); text-decoration: none;">Dashboard</a>
+            <span style="margin: 0 var(--spacing-sm);">/</span>
+            <span style="color: var(--text-primary);">Profile</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Profile Section -->
+<section class="profile-main" style="padding: var(--spacing-xxl) 0;">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Sidebar -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <!-- Profile Picture -->
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-avatar mb-3">
+                        {% else %}
+                            <div class="profile-avatar mx-auto mb-3 d-flex align-items-center justify-content-center" style="background: var(--primary-gradient); color: white; font-size: 3rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+
+                        <!-- User Info -->
+                        <h4 class="mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                        <p class="text-muted mb-2">@{{ user.username }}</p>
+
+                        <!-- Account Type Badge -->
+                        {% if user.account_type == 'client' %}
+                            <span class="badge badge-info">Client</span>
+                        {% elif user.account_type == 'provider' %}
+                            <span class="badge badge-success">Service Provider</span>
+                        {% elif user.account_type == 'business' %}
+                            <span class="badge badge-primary">Business</span>
+                        {% endif %}
+
+                        <!-- Rating (for providers) -->
+                        {% if user.account_type in 'provider,business' and average_rating %}
+                        <div class="profile-rating mt-3">
+                            <div class="stars mb-1">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% elif forloop.counter <= average_rating|add:0.5 %}
+                                        <i class="fas fa-star-half-alt"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span>{{ average_rating|floatformat:1 }}</span>
+                            </div>
+                            <small class="text-muted">{{ reviews_count }} reviews</small>
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="mt-4">
+                            <a href="{% url 'users:profile-update' %}" class="btn btn-primary btn-block">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </a>
+                            {% if user.account_type == 'client' %}
+                            <a href="{% url 'orders:client-orders' %}" class="btn btn-outline btn-block mt-2">
+                                <i class="fas fa-shopping-cart"></i> My Orders
+                            </a>
+                            {% elif user.account_type in 'provider,business' %}
+                            <a href="{% url 'orders:provider-orders' %}" class="btn btn-outline btn-block mt-2">
+                                <i class="fas fa-briefcase"></i> My Services
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-chart-bar"></i> Quick Stats</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="profile-stats">
+                            {% if user.account_type == 'client' %}
+                            <div class="profile-stat">
+                                <div class="number">{{ orders_count }}</div>
+                                <div class="label">Orders</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="number">{{ completed_orders }}</div>
+                                <div class="label">Completed</div>
+                            </div>
+                            {% else %}
+                            <div class="profile-stat">
+                                <div class="number">{{ services_count }}</div>
+                                <div class="label">Services</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="number">{{ orders_count }}</div>
+                                <div class="label">Orders</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-lg-8">
+                <!-- Personal Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-user"></i> Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">First Name</label>
+                                    <div class="form-control-plaintext">{{ user.first_name|default:'Not provided' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Last Name</label>
+                                    <div class="form-control-plaintext">{{ user.last_name|default:'Not provided' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Email Address</label>
+                                    <div class="form-control-plaintext">{{ user.email }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Phone Number</label>
+                                    <div class="form-control-plaintext">{{ user.phone_number|default:'Not provided' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if user.bio %}
+                        <div class="form-group">
+                            <label class="form-label">Bio</label>
+                            <div class="form-control-plaintext">{{ user.bio }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-info-circle"></i> Account Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Username</label>
+                                    <div class="form-control-plaintext">{{ user.username }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Account Type</label>
+                                    <div class="form-control-plaintext">{{ user.get_account_type_display }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Member Since</label>
+                                    <div class="form-control-plaintext">{{ user.date_joined|date:"M d, Y" }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Last Updated</label>
+                                    <div class="form-control-plaintext">{{ user.updated_at|date:"M d, Y" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity (for providers) -->
+                {% if user.account_type in 'provider,business' %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history"></i> Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user.services.all %}
+                        <h6>Recent Services</h6>
+                        <div class="list-group list-group-flush">
+                            {% for service in user.services.all|slice:":3" %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ service.name }}</h6>
+                                        <p class="mb-0 text-muted">{{ service.category.get_name_display }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div style="font-weight: 600; color: var(--success-color);">KES {{ service.price }}</div>
+                                        <small class="text-muted">{{ service.total_bookings }} bookings</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No services yet</h6>
+                            <p class="text-muted mb-0">Start offering services to attract clients</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

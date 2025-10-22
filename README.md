@@ -1,52 +1,54 @@
-# Service Marketplace App
+# ServiceHub - Service Marketplace Platform
 
-A comprehensive service marketplace application built with Django REST Framework that connects service providers with clients. The platform supports multiple user roles, payment integration, real-time notifications, and advanced search functionality.
+A comprehensive Django-based platform that connects service providers with clients, enabling seamless booking, payment processing, and service management.
 
-## Features
+## 🚀 Features
 
-### Core Features
-- **Multi-role User System**: Clients, Service Providers, and Businesses
-- **Service Management**: Create, update, and manage services with categories
-- **Booking System**: Advanced booking with scheduling and status tracking
-- **Payment Integration**: M-Pesa and Stripe payment processing
-- **Real-time Notifications**: Instant notifications for orders, payments, and updates
-- **Advanced Search**: Filter by location, price, rating, availability, and more
-- **Review System**: Rating and review system for services
-- **Admin Dashboard**: Comprehensive admin interface for platform management
+### Core Functionality
+- **Multi-role User System**: Clients, Individual Providers, and Business accounts
+- **Service Management**: Create, update, and manage service listings with rich details
+- **Advanced Search & Filtering**: Find services by location, category, price, rating, and more
+- **Booking System**: Schedule and manage service appointments
+- **Payment Integration**: Support for M-Pesa and Stripe payments
+- **Review & Rating System**: Build trust with verified reviews
+- **Real-time Notifications**: Stay updated with booking and payment notifications
+- **Admin Dashboard**: Comprehensive management interface
 
 ### Technical Features
-- **RESTful API**: Complete API with JWT authentication
-- **Role-based Permissions**: Custom permissions for different user types
-- **Docker Support**: Containerized deployment with Docker Compose
-- **Database Support**: PostgreSQL with Redis caching
-- **File Upload**: Image upload for services and profiles
-- **Email Integration**: SMTP email configuration
-- **CORS Support**: Cross-origin resource sharing for frontend integration
+- **RESTful API**: Complete API for mobile and web integrations
+- **Real-time Updates**: WebSocket support for live notifications
+- **Payment Processing**: Secure M-Pesa and Stripe integration
+- **Location Services**: GPS-based service discovery
+- **File Uploads**: Image and document management
+- **Caching**: Redis-powered performance optimization
+- **Background Tasks**: Celery for async processing
 
-## Technology Stack
+## 🛠️ Tech Stack
 
 - **Backend**: Django 5.2, Django REST Framework
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (production), SQLite (development)
 - **Cache**: Redis
-- **Payments**: M-Pesa (Safaricom), Stripe
-- **Authentication**: JWT tokens
+- **Task Queue**: Celery
+- **Payments**: M-Pesa (Daraja), Stripe
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Deployment**: Docker, Nginx, Gunicorn
-- **File Storage**: AWS S3 (production) / Local (development)
+- **Monitoring**: Sentry (error tracking)
 
-## Installation
+## 📋 Prerequisites
 
-### Prerequisites
-- Python 3.13+
-- PostgreSQL
-- Redis
-- Docker (optional)
+- Python 3.11+
+- PostgreSQL 15+
+- Redis 7+
+- Docker & Docker Compose (for containerized deployment)
 
-### Local Development
+## 🚀 Quick Start
+
+### Development Setup
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd service_app
+   git clone https://github.com/yourusername/servicehub.git
+   cd servicehub
    ```
 
 2. **Create virtual environment**
@@ -60,14 +62,15 @@ A comprehensive service marketplace application built with Django REST Framework
    pip install -r requirements.txt
    ```
 
-4. **Set up environment variables**
+4. **Environment configuration**
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
-5. **Run migrations**
+5. **Database setup**
    ```bash
+   python manage.py makemigrations
    python manage.py migrate
    ```
 
@@ -81,7 +84,28 @@ A comprehensive service marketplace application built with Django REST Framework
    python manage.py runserver
    ```
 
-## Environment Configuration
+### Production Deployment
+
+1. **Using Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Manual deployment**
+   ```bash
+   # Install production dependencies
+   pip install gunicorn psycopg2-binary
+
+   # Collect static files
+   python manage.py collectstatic
+
+   # Run with Gunicorn
+   gunicorn service_app.wsgi:application --bind 0.0.0.0:8000
+   ```
+
+## 🔧 Configuration
+
+### Environment Variables
 
 Create a `.env` file with the following variables:
 
@@ -92,200 +116,119 @@ DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/service_app
+DATABASE_URL=postgresql://user:password@localhost:5432/servicehub
 
 # Redis
-REDIS_URL=redis://localhost:6379/1
+REDIS_URL=redis://127.0.0.1:6379/1
+
+# Celery
+CELERY_BROKER_URL=redis://127.0.0.1:6379/1
+CELERY_RESULT_BACKEND=redis://127.0.0.1:6379/1
+
+# Payment Gateways
+STRIPE_PUBLIC_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+MPESA_CONSUMER_KEY=your-consumer-key
+MPESA_CONSUMER_SECRET=your-consumer-secret
+MPESA_SHORTCODE=your-shortcode
+MPESA_PASSKEY=your-passkey
 
 # Email
-EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
-
-# Payments
-STRIPE_PUBLIC_KEY=pk_test_your_stripe_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
-
-# M-Pesa
-MPESA_ENVIRONMENT=sandbox
-MPESA_CONSUMER_KEY=your_consumer_key
-MPESA_CONSUMER_SECRET=your_consumer_secret
-MPESA_SHORTCODE=your_shortcode
-MPESA_PASSKEY=your_passkey
 ```
 
-## Docker Deployment
+## 🧪 Testing
 
-1. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
+Run the test suite:
 
-2. **Run migrations in container**
-   ```bash
-   docker-compose exec app python manage.py migrate
-   ```
+```bash
+# Run all tests
+pytest
 
-3. **Create superuser**
-   ```bash
-   docker-compose exec app python manage.py createsuperuser
-   ```
+# Run with coverage
+pytest --cov=. --cov-report=html
 
-## API Documentation
+# Run specific test file
+pytest orders/tests.py
+
+# Run Django's test runner
+python manage.py test
+```
+
+## 📊 API Documentation
 
 ### Authentication Endpoints
 - `POST /api/users/register/` - User registration
-- `POST /api/token/` - JWT token obtain
-- `POST /api/token/refresh/` - JWT token refresh
+- `POST /api/auth/login/` - User login
+- `POST /api/auth/token/refresh/` - Refresh JWT token
 
-### User Management
-- `GET /api/users/profile/` - Get user profile
-- `PUT /api/users/profile/update/` - Update user profile
-- `GET /api/users/provider/dashboard/` - Provider dashboard
-- `GET /api/users/client/dashboard/` - Client dashboard
+### Service Endpoints
+- `GET /api/services/` - List services with filtering
+- `POST /api/services/` - Create new service (providers only)
+- `GET /api/services/{id}/` - Service details
+- `GET /api/services/search/` - Advanced search
+- `GET /api/services/recommendations/` - Personalized recommendations
 
-### Services
-- `GET /api/services/` - List services (with filtering)
-- `POST /api/services/` - Create service (providers only)
-- `GET /api/services/search/` - Search services
-- `GET /api/services/search/advanced/` - Advanced search
-- `GET /api/services/nearby/` - Find nearby services
+### Order Endpoints
+- `GET /api/orders/` - List user orders
+- `POST /api/orders/` - Create new order
+- `GET /api/orders/{id}/` - Order details
+- `POST /api/orders/book/{service_id}/` - Quick booking
 
-### Orders & Bookings
-- `GET /api/orders/` - List orders
-- `POST /api/orders/` - Create order
-- `POST /api/orders/book/{service_id}/` - Book a service
-- `PUT /api/orders/{id}/update-status/` - Update order status
-
-### Payments
-- `POST /api/payments/create/{order_id}/` - Create payment
+### Payment Endpoints
+- `POST /api/payments/create/{order_id}/` - Initiate payment
 - `GET /api/payments/history/` - Payment history
 - `POST /api/payments/{payment_id}/refund/` - Process refund
 
-### Notifications
-- `GET /api/orders/notifications/` - List notifications
-- `PUT /api/orders/notifications/{id}/` - Mark as read
-- `GET /api/orders/notifications/unread-count/` - Unread count
+## 🔒 Security Features
 
-## User Roles
+- JWT authentication with refresh tokens
+- Role-based access control (RBAC)
+- Input validation and sanitization
+- SQL injection prevention
+- XSS protection
+- CSRF protection
+- Secure file uploads
+- Rate limiting
+- Audit logging
 
-### Client
-- Browse and search services
-- Book services
-- Make payments
-- Leave reviews
-- Receive notifications
+## 📈 Performance Optimization
 
-### Service Provider
-- Create and manage services
-- Receive bookings
-- Update order status
-- Receive payments
-- View earnings
+- Database query optimization
+- Redis caching for frequently accessed data
+- Static file optimization with WhiteNoise
+- Gzip compression
+- Database indexing
+- Background task processing with Celery
 
-### Business
-- All provider features
-- Multiple service categories
-- Business analytics
-
-## Testing
-
-Run the test suite:
-```bash
-# Run all tests
-python manage.py test
-
-# Run specific app tests
-python manage.py test services
-python manage.py test orders
-
-# Run with coverage
-coverage run manage.py test
-coverage report
-```
-
-## Deployment
-
-### Production Checklist
-- [ ] Set DEBUG=False
-- [ ] Configure ALLOWED_HOSTS
-- [ ] Set up SSL certificates
-- [ ] Configure static files storage (AWS S3)
-- [ ] Set up email backend
-- [ ] Configure payment webhooks
-- [ ] Set up monitoring and logging
-- [ ] Configure backup strategy
-
-### Using Docker Compose (Production)
-```bash
-# Update environment variables in docker-compose.yml
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-## API Usage Examples
-
-### Register a new user
-```bash
-curl -X POST http://localhost:8000/api/users/register/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "johndoe",
-    "email": "john@example.com",
-    "password": "securepassword",
-    "password2": "securepassword",
-    "first_name": "John",
-    "last_name": "Doe",
-    "account_type": "client"
-  }'
-```
-
-### Search services
-```bash
-curl "http://localhost:8000/api/services/search/?q=cleaning&location=nairobi&min_rating=4"
-```
-
-### Create a service (Provider only)
-```bash
-curl -X POST http://localhost:8000/api/services/ \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "House Cleaning",
-    "description": "Professional house cleaning service",
-    "price": 50.00,
-    "category_id": 1,
-    "location": "Nairobi, Kenya"
-  }'
-```
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 📞 Support
 
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
+For support, email support@servicehub.com or join our Slack community.
 
-## Changelog
+## 🙏 Acknowledgments
 
-### Version 1.0.0
-- Initial release
-- Core marketplace functionality
-- Payment integration
-- User role management
-- Admin dashboard
+- Django community for the excellent framework
+- All contributors and users of this platform
+- Open source libraries that made this possible
+
+---
+
+**Made with ❤️ by the ServiceHub Team**

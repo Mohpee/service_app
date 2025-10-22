@@ -4,35 +4,35 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero">
+<section class="homepage-hero">
     <div class="container">
         <div class="hero-content">
             <h1>Find Trusted Local Services</h1>
             <p>Connect with verified service providers in your community. From home cleaning to professional consulting, get quality services at your fingertips.</p>
 
             <!-- Search Bar -->
-            <div style="max-width: 600px; margin: 0 auto;">
-                <form class="d-flex gap-2" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: var(--spacing-sm); border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.2);">
-                    <input type="text" placeholder="What service do you need?" style="flex: 1; padding: var(--spacing-md); border: none; background: transparent; color: white; font-size: 1rem;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='transparent'">
-                    <input type="text" placeholder="Location" style="flex: 0 0 200px; padding: var(--spacing-md); border: none; background: transparent; color: white; font-size: 1rem;" onfocus="this.style.background='rgba(255,255,255,0.1)'" onblur="this.style.background='transparent'">
-                    <button type="submit" class="btn btn-secondary" style="border-radius: var(--radius-full); padding: var(--spacing-md) var(--spacing-lg);">
+            <div class="homepage-search">
+                <form class="d-flex gap-2">
+                    <input type="text" name="q" placeholder="What service do you need?" class="form-input">
+                    <input type="text" name="location" placeholder="Location" class="form-input">
+                    <button type="submit" class="btn btn-secondary">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </form>
             </div>
 
             <!-- Quick Stats -->
-            <div class="d-flex justify-content-center gap-4 mt-5" style="opacity: 0.9;">
+            <div class="d-flex justify-content-center gap-4 mt-5 homepage-quick-stats" style="opacity: 0.9;">
                 <div class="text-center">
-                    <div style="font-size: 2rem; font-weight: 700;">500+</div>
+                    <div>500+</div>
                     <div>Service Providers</div>
                 </div>
                 <div class="text-center">
-                    <div style="font-size: 2rem; font-weight: 700;">50+</div>
+                    <div>50+</div>
                     <div>Service Categories</div>
                 </div>
                 <div class="text-center">
-                    <div style="font-size: 2rem; font-weight: 700;">10k+</div>
+                    <div>10k+</div>
                     <div>Happy Customers</div>
                 </div>
             </div>
@@ -50,10 +50,10 @@
             </p>
         </div>
 
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-xl);">
+        <div class="d-grid homepage-features" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-xl);">
             <!-- Feature 1 -->
             <div class="text-center">
-                <div style="width: 80px; height: 80px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 2rem; color: white;">
+                <div>
                     <i class="fas fa-shield-alt"></i>
                 </div>
                 <h4>Verified Professionals</h4>
@@ -62,7 +62,7 @@
 
             <!-- Feature 2 -->
             <div class="text-center">
-                <div style="width: 80px; height: 80px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 2rem; color: white;">
+                <div>
                     <i class="fas fa-clock"></i>
                 </div>
                 <h4>Quick & Reliable</h4>
@@ -71,7 +71,7 @@
 
             <!-- Feature 3 -->
             <div class="text-center">
-                <div style="width: 80px; height: 80px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 2rem; color: white;">
+                <div>
                     <i class="fas fa-star"></i>
                 </div>
                 <h4>Quality Guaranteed</h4>
@@ -89,10 +89,10 @@
             <p style="font-size: 1.125rem; color: var(--text-secondary);">Discover the most sought-after services in your area</p>
         </div>
 
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg);">
+        <div class="d-grid homepage-service-cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg);">
             <!-- Service Category Cards -->
-            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=home'">
-                <div style="height: 200px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+            <div class="card" onclick="window.location.href='/services/?category=home'">
+                <div>
                     <i class="fas fa-home"></i>
                 </div>
                 <div class="card-body text-center">
@@ -105,8 +105,8 @@
                 </div>
             </div>
 
-            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=beauty'">
-                <div style="height: 200px; background: linear-gradient(135deg, #f093fb, #f5576c); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+            <div class="card" onclick="window.location.href='/services/?category=beauty'">
+                <div>
                     <i class="fas fa-spa"></i>
                 </div>
                 <div class="card-body text-center">
@@ -119,8 +119,8 @@
                 </div>
             </div>
 
-            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=education'">
-                <div style="height: 200px; background: linear-gradient(135deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+            <div class="card" onclick="window.location.href='/services/?category=education'">
+                <div>
                     <i class="fas fa-graduation-cap"></i>
                 </div>
                 <div class="card-body text-center">
@@ -133,8 +133,8 @@
                 </div>
             </div>
 
-            <div class="card" style="cursor: pointer;" onclick="window.location.href='/services/?category=professional'">
-                <div style="height: 200px; background: linear-gradient(135deg, #43e97b, #38f9d7); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+            <div class="card" onclick="window.location.href='/services/?category=professional'">
+                <div>
                     <i class="fas fa-briefcase"></i>
                 </div>
                 <div class="card-body text-center">
@@ -158,24 +158,24 @@
             <p style="font-size: 1.125rem; color: var(--text-secondary);">Getting quality services has never been easier</p>
         </div>
 
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-xl);">
+        <div class="d-grid homepage-how-it-works" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-xl);">
             <!-- Step 1 -->
             <div class="text-center">
-                <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 1.5rem; color: white; font-weight: 700;">1</div>
+                <div>1</div>
                 <h4>Search & Discover</h4>
                 <p style="color: var(--text-secondary);">Browse through our verified service providers and find exactly what you need.</p>
             </div>
 
             <!-- Step 2 -->
             <div class="text-center">
-                <div style="width: 60px; height: 60px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 1.5rem; color: white; font-weight: 700;">2</div>
+                <div>2</div>
                 <h4>Book & Schedule</h4>
                 <p style="color: var(--text-secondary);">Select your preferred provider, choose a convenient time, and book instantly.</p>
             </div>
 
             <!-- Step 3 -->
             <div class="text-center">
-                <div style="width: 60px; height: 60px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-lg); font-size: 1.5rem; color: white; font-weight: 700;">3</div>
+                <div>3</div>
                 <h4>Pay & Relax</h4>
                 <p style="color: var(--text-secondary);">Pay securely through our platform and enjoy professional service at your doorstep.</p>
             </div>
@@ -184,7 +184,7 @@
 </section>
 
 <!-- CTA Section -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--dark-primary); color: white;">
+<section class="homepage-cta">
     <div class="container text-center">
         <h2>Ready to Get Started?</h2>
         <p style="font-size: 1.125rem; margin-bottom: var(--spacing-xl); opacity: 0.9;">Join thousands of satisfied customers and service providers</p>
@@ -199,45 +199,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-    // Add smooth scroll behavior for internal links
-    document.addEventListener('DOMContentLoaded', function() {
-        // Animate service cards on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe all service cards
-        document.querySelectorAll('.card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(card);
-        });
-
-        // Add hover effects to category cards
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-    });
-</script>
 {% endblock %}

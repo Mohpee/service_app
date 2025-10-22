@@ -4,24 +4,21 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section style="background: var(--primary-gradient); color: white; padding: var(--spacing-xxl) 0; position: relative; overflow: hidden;">
+<section class="about-hero">
     <div class="container">
         <div class="text-center">
-            <h1 style="font-size: 3.5rem; margin-bottom: var(--spacing-lg); animation: fadeInUp 1s ease-out;">About ServiceHub</h1>
-            <p style="font-size: 1.25rem; opacity: 0.9; max-width: 600px; margin: 0 auto; animation: fadeInUp 1s ease-out 0.2s both;">
+            <h1>About ServiceHub</h1>
+            <p>
                 Revolutionizing how communities connect with local service providers through trust, transparency, and technology.
             </p>
         </div>
     </div>
-
-    <!-- Background Pattern -->
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
 </section>
 
 <!-- Mission Section -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--light-primary);">
+<section class="about-mission" style="padding: var(--spacing-xxl) 0; background: var(--light-primary);">
     <div class="container">
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-xl); align-items: center;">
+        <div class="d-grid">
             <!-- Mission Content -->
             <div>
                 <h2 style="margin-bottom: var(--spacing-lg); color: var(--text-primary);">Our Mission</h2>
@@ -37,8 +34,8 @@
 
             <!-- Mission Visual -->
             <div class="text-center">
-                <div style="width: 250px; height: 250px; background: var(--primary-gradient); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: var(--shadow-xl);">
-                    <i class="fas fa-handshake" style="font-size: 4rem; color: white;"></i>
+                <div class="about-mission-visual">
+                    <i class="fas fa-handshake"></i>
                 </div>
             </div>
         </div>
@@ -46,7 +43,7 @@
 </section>
 
 <!-- Stats Section -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--primary-gradient); color: white;">
+<section class="about-stats">
     <div class="container">
         <div class="text-center mb-4">
             <h2 style="margin-bottom: var(--spacing-md);">ServiceHub by Numbers</h2>
@@ -55,19 +52,19 @@
 
         <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg);">
             <div class="text-center">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-sm); color: var(--text-primary);">500+</div>
+                <div>500+</div>
                 <div style="opacity: 0.9;">Verified Providers</div>
             </div>
             <div class="text-center">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-sm); color: var(--text-primary);">50+</div>
+                <div>50+</div>
                 <div style="opacity: 0.9;">Service Categories</div>
             </div>
             <div class="text-center">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-sm); color: var(--text-primary);">10k+</div>
+                <div>10k+</div>
                 <div style="opacity: 0.9;">Happy Customers</div>
             </div>
             <div class="text-center">
-                <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-sm); color: var(--text-primary);">4.8★</div>
+                <div>4.8★</div>
                 <div style="opacity: 0.9;">Average Rating</div>
             </div>
         </div>
@@ -75,7 +72,7 @@
 </section>
 
 <!-- Features Section -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--light-primary);">
+<section class="about-features" style="padding: var(--spacing-xxl) 0; background: var(--light-primary);">
     <div class="container">
         <div class="text-center mb-4">
             <h2 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">Why Choose ServiceHub?</h2>
@@ -86,10 +83,10 @@
 
         <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg);">
             <!-- Feature 1 -->
-            <div class="card" style="border: none; box-shadow: var(--shadow-lg); transition: all 0.3s ease;">
-                <div class="card-body text-center" style="padding: var(--spacing-lg);">
-                    <div style="width: 70px; height: 70px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md);">
-                        <i class="fas fa-shield-alt" style="font-size: 1.75rem; color: white;"></i>
+            <div class="card">
+                <div class="card-body text-center">
+                    <div>
+                        <i class="fas fa-shield-alt"></i>
                     </div>
                     <h3 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">Verified & Trusted</h3>
                     <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem;">
@@ -99,10 +96,10 @@
             </div>
 
             <!-- Feature 2 -->
-            <div class="card" style="border: none; box-shadow: var(--shadow-lg); transition: all 0.3s ease;">
-                <div class="card-body text-center" style="padding: var(--spacing-lg);">
-                    <div style="width: 70px; height: 70px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md);">
-                        <i class="fas fa-clock" style="font-size: 1.75rem; color: white;"></i>
+            <div class="card">
+                <div class="card-body text-center">
+                    <div>
+                        <i class="fas fa-clock"></i>
                     </div>
                     <h3 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">Convenient & Fast</h3>
                     <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem;">
@@ -112,10 +109,10 @@
             </div>
 
             <!-- Feature 3 -->
-            <div class="card" style="border: none; box-shadow: var(--shadow-lg); transition: all 0.3s ease;">
-                <div class="card-body text-center" style="padding: var(--spacing-lg);">
-                    <div style="width: 70px; height: 70px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md);">
-                        <i class="fas fa-star" style="font-size: 1.75rem; color: white;"></i>
+            <div class="card">
+                <div class="card-body text-center">
+                    <div>
+                        <i class="fas fa-star"></i>
                     </div>
                     <h3 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">Quality Guaranteed</h3>
                     <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem;">
@@ -128,7 +125,7 @@
 </section>
 
 <!-- Team Section -->
-<section style="padding: var(--spacing-xxl) 0; background: white;">
+<section class="about-team" style="padding: var(--spacing-xxl) 0; background: white;">
     <div class="container">
         <div class="text-center mb-4">
             <h2 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">Meet Our Team</h2>
@@ -137,11 +134,11 @@
             </p>
         </div>
 
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--spacing-lg);">
+        <div class="d-grid">
             <!-- Team Member 1 -->
             <div class="text-center">
-                <div style="width: 120px; height: 120px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-lg);">
-                    <i class="fas fa-user-tie" style="font-size: 2.5rem; color: white;"></i>
+                <div>
+                    <i class="fas fa-user-tie"></i>
                 </div>
                 <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Mugure Peter</h4>
                 <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm); font-weight: 600;">CEO & Founder</p>
@@ -152,8 +149,8 @@
 
             <!-- Team Member 2 -->
             <div class="text-center">
-                <div style="width: 120px; height: 120px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-lg);">
-                    <i class="fas fa-user" style="font-size: 2.5rem; color: white;"></i>
+                <div>
+                    <i class="fas fa-user"></i>
                 </div>
                 <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Owino Victor</h4>
                 <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm); font-weight: 600;">CTO & Co-Founder</p>
@@ -164,8 +161,8 @@
 
             <!-- Team Member 3 -->
             <div class="text-center">
-                <div style="width: 120px; height: 120px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-lg);">
-                    <i class="fas fa-user-graduate" style="font-size: 2.5rem; color: white;"></i>
+                <div>
+                    <i class="fas fa-user-graduate"></i>
                 </div>
                 <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-primary);">Fidel Eliud</h4>
                 <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm); font-weight: 600;">Head of Operations</p>
@@ -178,7 +175,7 @@
 </section>
 
 <!-- CTA Section -->
-<section style="padding: var(--spacing-xxl) 0; background: var(--primary-gradient); color: white;">
+<section class="about-cta">
     <div class="container text-center">
         <h2 style="margin-bottom: var(--spacing-lg);">Ready to Get Started?</h2>
         <p style="opacity: 0.9; margin-bottom: var(--spacing-xl); max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -200,21 +197,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-    // Add hover effects for feature cards
-    document.addEventListener('DOMContentLoaded', function() {
-        const featureCards = document.querySelectorAll('.card');
-        featureCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px)';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-    });
-</script>
 {% endblock %}

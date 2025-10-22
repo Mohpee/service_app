@@ -4,162 +4,292 @@
 
 {% block content %}
 <!-- Page Header -->
-<section style="background: var(--light-primary); padding: var(--spacing-xxl) 0;">
+<section class="service-list-header">
     <div class="container">
         <div class="text-center mb-4">
             <h1>Find Services</h1>
-            <p style="font-size: 1.125rem; color: var(--text-secondary);">
+            <p>
                 Discover trusted professionals in your area
             </p>
         </div>
 
         <!-- Advanced Search Bar -->
-        <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="service-list-search-card card">
             <div class="card-body">
-                <form class="d-grid" style="grid-template-columns: 2fr 1fr 1fr auto; gap: var(--spacing-md); align-items: end;">
+                <form id="search-form" class="service-list-search-form d-grid">
                     <div class="form-group">
                         <label class="form-label">What service do you need?</label>
-                        <input type="text" name="search" class="form-input" placeholder="e.g., house cleaning, plumbing, tutoring" value="{{ request.GET.q }}">
+                        <div style="position: relative;">
+                            <input type="text" name="q" id="search-input" class="form-input" placeholder="e.g., house cleaning, plumbing, tutoring" value="{{ request.GET.q }}">
+                            <i class="service-list-search-icon fas fa-search"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Location</label>
-                        <input type="text" name="location" class="form-input" placeholder="City, Area" value="{{ request.GET.location }}">
+                        <div style="position: relative;">
+                            <input type="text" name="location" id="location-input" class="form-input" placeholder="City, Area" value="{{ request.GET.location }}">
+                            <i class="service-list-search-icon fas fa-map-marker-alt"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Category</label>
-                        <select name="category" class="form-input">
+                        <select name="category" id="category-select" class="form-input">
                             <option value="">All Categories</option>
-                            <option value="HOME" {% if request.GET.category == 'HOME' %}selected{% endif %}>Home & Cleaning</option>
-                            <option value="BEAUTY" {% if request.GET.category == 'BEAUTY' %}selected{% endif %}>Beauty & Wellness</option>
-                            <option value="EDU" {% if request.GET.category == 'EDU' %}selected{% endif %}>Education & Training</option>
-                            <option value="PROF" {% if request.GET.category == 'PROF' %}selected{% endif %}>Professional Services</option>
+                            <option value="HOME" {% if request.GET.category == 'HOME' %}selected{% endif %}>🏠 Home & Cleaning</option>
+                            <option value="FOOD" {% if request.GET.category == 'FOOD' %}selected{% endif %}>🍽️ Food & Catering</option>
+                            <option value="BEAUTY" {% if request.GET.category == 'BEAUTY' %}selected{% endif %}>💄 Beauty & Wellness</option>
+                            <option value="CREATIVE" {% if request.GET.category == 'CREATIVE' %}selected{% endif %}>🎨 Creative & Talent</option>
+                            <option value="RETAIL" {% if request.GET.category == 'RETAIL' %}selected{% endif %}>🛍️ Products & Retail</option>
+                            <option value="PROF" {% if request.GET.category == 'PROF' %}selected{% endif %}>💼 Professional Services</option>
+                            <option value="TRANSPORT" {% if request.GET.category == 'TRANSPORT' %}selected{% endif %}>🚗 Transport & Delivery</option>
+                            <option value="AGENCY" {% if request.GET.category == 'AGENCY' %}selected{% endif %}>🏢 Agency & Business</option>
+                            <option value="EDU" {% if request.GET.category == 'EDU' %}selected{% endif %}>📚 Education & Training</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="service-list-search-btn btn btn-primary">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </form>
+
+                <!-- Quick Filters -->
+                <div class="service-list-quick-filters d-flex gap-2 mt-3">
+                    <button class="btn btn-outline btn-sm" onclick="window.location.href='/services/?category=HOME'">🏠 Home Services</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.location.href='/services/?category=BEAUTY'">💄 Beauty</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.location.href='/services/?category=PROF'">💼 Professional</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.location.href='/services/?category=EDU'">📚 Education</button>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Filters and Results Section -->
-<section style="padding: var(--spacing-xxl) 0;">
+<section class="service-list-main">
     <div class="container">
         <div class="d-flex gap-4">
             <!-- Filters Sidebar -->
-            <aside style="flex: 0 0 280px;">
-                <div class="card">
+            <aside class="service-list-sidebar">
+                <div class="service-list-filters-card card">
                     <div class="card-header">
                         <h5><i class="fas fa-filter"></i> Filters</h5>
                     </div>
                     <div class="card-body">
                         <!-- Price Range -->
-                        <div class="form-group">
-                            <label class="form-label">Price Range</label>
-                            <div class="d-flex gap-2">
-                                <input type="number" name="min_price" class="form-input" placeholder="Min" value="{{ request.GET.min_price }}">
-                                <input type="number" name="max_price" class="form-input" placeholder="Max" value="{{ request.GET.max_price }}">
+                        <div class="service-list-filter-group form-group">
+                            <label class="service-list-filter-label form-label">💰 Price Range (KES)</label>
+                            <div class="service-list-price-inputs d-flex gap-2">
+                                <input type="number" name="min_price" id="min-price" class="form-input" placeholder="Min" value="{{ request.GET.min_price }}">
+                                <span style="align-self: center; color: var(--text-secondary);">-</span>
+                                <input type="number" name="max_price" id="max-price" class="form-input" placeholder="Max" value="{{ request.GET.max_price }}">
+                            </div>
+                            <div class="service-list-price-range price-slider">
+                                <div class="price-range" id="price-range"></div>
                             </div>
                         </div>
 
                         <!-- Rating Filter -->
-                        <div class="form-group">
-                            <label class="form-label">Minimum Rating</label>
-                            <select name="min_rating" class="form-input">
+                        <div class="service-list-filter-group form-group">
+                            <label class="service-list-filter-label form-label">⭐ Minimum Rating</label>
+                            <select name="min_rating" id="min-rating" class="form-input">
                                 <option value="">Any Rating</option>
-                                <option value="4" {% if request.GET.min_rating == '4' %}selected{% endif %}>4+ Stars</option>
-                                <option value="3" {% if request.GET.min_rating == '3' %}selected{% endif %}>3+ Stars</option>
+                                <option value="4.5" {% if request.GET.min_rating == '4.5' %}selected{% endif %}>⭐⭐⭐⭐⭐ 4.5+ Stars</option>
+                                <option value="4" {% if request.GET.min_rating == '4' %}selected{% endif %}>⭐⭐⭐⭐ 4+ Stars</option>
+                                <option value="3.5" {% if request.GET.min_rating == '3.5' %}selected{% endif %}>⭐⭐⭐⭐ 3.5+ Stars</option>
+                                <option value="3" {% if request.GET.min_rating == '3' %}selected{% endif %}>⭐⭐⭐ 3+ Stars</option>
                             </select>
                         </div>
 
                         <!-- Availability -->
-                        <div class="form-group">
-                            <label class="form-label">Availability</label>
-                            <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
-                                <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
-                                    <input type="checkbox" name="available_today" value="1" {% if request.GET.available_today %}checked{% endif %}>
-                                    Available Today
+                        <div class="service-list-filter-group form-group">
+                            <label class="service-list-filter-label form-label">🕒 Availability</label>
+                            <div class="service-list-availability-labels">
+                                <label>
+                                    <input type="checkbox" name="availability" value="today" id="available-today" {% if request.GET.availability == 'today' %}checked{% endif %}>
+                                    <span>📅 Available Today</span>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
-                                    <input type="checkbox" name="available_weekend" value="1" {% if request.GET.available_weekend %}checked{% endif %}>
-                                    Available Weekends
+                                <label>
+                                    <input type="checkbox" name="availability" value="weekend" id="available-weekend" {% if request.GET.availability == 'weekend' %}checked{% endif %}>
+                                    <span>🏖️ Available Weekends</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Experience -->
-                        <div class="form-group">
-                            <label class="form-label">Experience Level</label>
-                            <select name="experience" class="form-input">
+                        <div class="service-list-filter-group form-group">
+                            <label class="service-list-filter-label form-label">🎓 Experience Level</label>
+                            <select name="experience_min" id="experience-select" class="form-input">
                                 <option value="">Any Experience</option>
-                                <option value="1" {% if request.GET.experience == '1' %}selected{% endif %}>1+ Years</option>
-                                <option value="3" {% if request.GET.experience == '3' %}selected{% endif %}>3+ Years</option>
-                                <option value="5" {% if request.GET.experience == '5' %}selected{% endif %}>5+ Years</option>
+                                <option value="1" {% if request.GET.experience_min == '1' %}selected{% endif %}>🔰 1+ Years</option>
+                                <option value="3" {% if request.GET.experience_min == '3' %}selected{% endif %}>👨‍💼 3+ Years</option>
+                                <option value="5" {% if request.GET.experience_min == '5' %}selected{% endif %}>🏆 5+ Years</option>
+                                <option value="10" {% if request.GET.experience_min == '10' %}selected{% endif %}>👑 10+ Years</option>
                             </select>
                         </div>
 
-                        <button type="button" class="btn btn-outline" style="width: 100%;" onclick="clearFilters()">
-                            <i class="fas fa-times"></i> Clear Filters
-                        </button>
+                        <!-- Provider Type -->
+                        <div class="service-list-filter-group form-group">
+                            <label class="service-list-filter-label form-label">👤 Provider Type</label>
+                            <select name="provider_type" id="provider-type" class="form-input">
+                                <option value="">All Providers</option>
+                                <option value="provider" {% if request.GET.provider_type == 'provider' %}selected{% endif %}>👨‍🔧 Individual Provider</option>
+                                <option value="business" {% if request.GET.provider_type == 'business' %}selected{% endif %}>🏢 Business</option>
+                            </select>
+                        </div>
+
+                        <!-- Languages -->
+                        <div class="service-list-filter-group form-group">
+                            <label class="service-list-filter-label form-label">🗣️ Languages</label>
+                            <div class="service-list-languages">
+                                <label class="service-list-language-label">
+                                    <input type="checkbox" name="languages" value="english">
+                                    <span>🇺🇸 English</span>
+                                </label>
+                                <label class="service-list-language-label">
+                                    <input type="checkbox" name="languages" value="swahili">
+                                    <span>🇰🇪 Swahili</span>
+                                </label>
+                                <label class="service-list-language-label">
+                                    <input type="checkbox" name="languages" value="french">
+                                    <span>🇫🇷 French</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="service-list-filter-buttons d-flex gap-2">
+                            <button type="button" class="btn btn-outline" onclick="applyFilters()">
+                                <i class="fas fa-check"></i> Apply
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
                     </div>
                 </div>
             </aside>
 
             <!-- Results Area -->
-            <main style="flex: 1;">
+            <main class="service-list-main-content">
                 <!-- Results Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="service-list-results-header d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2>Services {% if request.GET.q %}for "{{ request.GET.q }}"{% endif %}</h2>
-                        <p style="color: var(--text-secondary);">
-                            {% if services %}Showing {{ services|length }} result{{ services|length|pluralize }}{% else %}No results found{% endif %}
+                        <h2 class="service-list-results-title">
+                            Services {% if request.GET.q %}for "<span>{{ request.GET.q }}</span>"{% endif %}
+                        </h2>
+                        <p class="service-list-results-count">
+                            {% if services %}
+                                <i class="fas fa-search"></i>
+                                Showing <strong>{{ services|length }}</strong> result{{ services|length|pluralize }}
+                            {% else %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                                No results found
+                            {% endif %}
                         </p>
                     </div>
 
                     <!-- Sort Options -->
                     <div class="d-flex align-items-center gap-2">
-                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Sort by:</label>
-                        <select name="sort" class="form-input" style="width: auto;" onchange="changeSort(this.value)">
-                            <option value="relevance" {% if request.GET.sort == 'relevance' %}selected{% endif %}>Relevance</option>
-                            <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Rating</option>
-                            <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                            <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <label style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600;">📊 Sort by:</label>
+                        <select name="sort_by" id="sort-select" class="service-list-sort-select form-input" onchange="changeSort(this.value)">
+                            <option value="relevance" {% if request.GET.sort_by == 'relevance' %}selected{% endif %}>🎯 Relevance</option>
+                            <option value="rating" {% if request.GET.sort_by == 'rating' %}selected{% endif %}>⭐ Rating</option>
+                            <option value="price_low" {% if request.GET.sort_by == 'price_low' %}selected{% endif %}>💰 Price: Low to High</option>
+                            <option value="price_high" {% if request.GET.sort_by == 'price_high' %}selected{% endif %}>💎 Price: High to Low</option>
+                            <option value="newest" {% if request.GET.sort_by == 'newest' %}selected{% endif %}>🆕 Newest First</option>
+                            <option value="popular" {% if request.GET.sort_by == 'popular' %}selected{% endif %}>🔥 Most Popular</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- View Toggle -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="service-list-view-toggle d-flex gap-2">
+                        <button class="btn btn-outline btn-sm active" id="grid-view" onclick="toggleView('grid')">
+                            <i class="fas fa-th"></i> Grid
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="list-view" onclick="toggleView('list')">
+                            <i class="fas fa-list"></i> List
+                        </button>
+                    </div>
+
+                    <!-- Results per page -->
+                    <div class="service-list-per-page d-flex align-items-center gap-2">
+                        <label>Show:</label>
+                        <select name="per_page" id="per-page" class="form-input" onchange="changePerPage(this.value)">
+                            <option value="12" {% if request.GET.per_page == '12' %}selected{% endif %}>12</option>
+                            <option value="24" {% if request.GET.per_page == '24' %}selected{% endif %}>24</option>
+                            <option value="48" {% if request.GET.per_page == '48' %}selected{% endif %}>48</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Loading State -->
-                <div id="loading" class="text-center" style="display: none; padding: var(--spacing-xxl);">
-                    <div class="loading" style="width: 40px; height: 40px; border: 4px solid var(--light-secondary); border-top: 4px solid #667eea; border-radius: 50%; margin: 0 auto var(--spacing-lg);"></div>
+                <div id="loading" class="service-list-loading text-center">
+                    <div class="loading"></div>
                     <p>Loading services...</p>
                 </div>
 
                 <!-- Services Grid -->
-                <div id="services-grid" class="d-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-lg);">
+                <div id="services-grid" class="service-list-grid">
                     {% for service in services %}
-                    <div class="service-card">
-                        <div style="height: 200px; background: var(--light-secondary); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-secondary);">
+                    <div class="service-list-card service-card">
+                        <!-- Service Image -->
+                        <div class="service-list-card-image">
                             {% if service.image %}
-                                <img src="{{ service.image.url }}" alt="{{ service.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                                <div class="service-list-card-photo-badge">
+                                    📸 Photo
+                                </div>
                             {% else %}
-                                <i class="fas fa-tools"></i>
+                                <div class="service-list-card-no-image">
+                                    <i class="fas fa-tools"></i>
+                                    <div>No Image</div>
+                                </div>
                             {% endif %}
+
+                            <!-- Quick Actions Overlay -->
+                            <div class="service-list-card-overlay service-overlay">
+                                <div class="service-list-card-overlay-buttons d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='/services/{{ service.pk }}/'">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                    <button class="btn btn-outline-light btn-sm" onclick="event.stopPropagation(); window.addToFavorites('{{ service.pk }}')" title="Add to favorites">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="service-content">
-                            <div class="service-title">{{ service.name }}</div>
-                            <div class="service-provider">
-                                <i class="fas fa-user"></i> {{ service.provider.get_full_name|default:service.provider.username }}
+                        <div class="service-list-card-content service-content">
+                            <!-- Service Title -->
+                            <div class="service-list-card-title service-title">
+                                {{ service.name|truncatechars:50 }}
                             </div>
 
-                            <div class="service-rating">
-                                <div class="rating-stars">
+                            <!-- Provider Info -->
+                            <div class="service-list-card-provider service-provider">
+                                <div class="service-list-card-provider-avatar">
+                                    {{ service.provider_name|first|upper }}
+                                </div>
+                                <div class="service-list-card-provider-info">
+                                    <div>
+                                        {{ service.provider_name|truncatechars:25 }}
+                                    </div>
+                                    <div>
+                                        {% if service.provider_rating %}
+                                            ⭐ {{ service.provider_rating|floatformat:1 }} rating
+                                        {% else %}
+                                            New provider
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rating -->
+                            <div class="service-list-card-rating service-rating">
+                                <div class="service-list-card-rating-stars rating-stars">
                                     {% with ''|center:service.rating|add:'0' as range %}
                                     {% for i in range %}
                                         {% if forloop.counter <= service.rating|floatformat:0 %}
@@ -172,66 +302,102 @@
                                     {% endfor %}
                                     {% endwith %}
                                 </div>
-                                <span style="font-size: 0.875rem; color: var(--text-secondary);">
-                                    {{ service.rating|floatformat:1 }} ({{ service.reviews_count }} reviews)
+                                <span>
+                                    {{ service.rating|floatformat:1 }} ({{ service.reviews_count }} review{{ service.reviews_count|pluralize }})
                                 </span>
                             </div>
 
-                            <div class="service-price">
-                                KES {{ service.price|floatformat:0 }}
-                                {% if service.base_price %}
-                                    <span style="font-size: 0.75rem; color: var(--text-secondary); text-decoration: line-through;">
+                            <!-- Price -->
+                            <div class="service-list-card-price service-price">
+                                <span>
+                                    KES {{ service.price|floatformat:0 }}
+                                </span>
+                                {% if service.base_price and service.base_price > service.price %}
+                                    <span>
                                         KES {{ service.base_price|floatformat:0 }}
+                                    </span>
+                                    <span>
+                                        {% widthratio service.base_price service.price 100|floatformat:0 %}% OFF
                                     </span>
                                 {% endif %}
                             </div>
 
-                            <div class="service-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                {{ service.location }}
+                            <!-- Location & Experience -->
+                            <div class="service-list-card-footer d-flex justify-content-between align-items-center mb-3">
+                                <div class="service-list-card-location service-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ service.location|truncatechars:20 }}
+                                </div>
+                                {% if service.experience_years %}
+                                <div class="service-list-card-experience">
+                                    🎓 {{ service.experience_years }}y exp
+                                </div>
+                                {% endif %}
                             </div>
 
-                            <div class="d-flex gap-2 mt-3">
-                                <a href="{% url 'services:service-detail' service.pk %}" class="btn btn-primary" style="flex: 1;">
-                                    View Details
+                            <!-- Action Buttons -->
+                            <div class="service-list-card-actions d-flex gap-2">
+                                <a href="{% url 'services:service-detail' service.pk %}" class="btn btn-primary" onclick="event.stopPropagation();">
+                                    <i class="fas fa-info-circle"></i> View Details
                                 </a>
-                                <button class="btn btn-outline" onclick="bookService('{{ service.pk }}')">
+                                <button class="btn btn-outline" onclick="event.stopPropagation(); window.location.href='/orders/book/{{ service.pk }}/'" title="Book this service">
                                     <i class="fas fa-calendar-plus"></i>
                                 </button>
+                                <button class="btn btn-outline" onclick="event.stopPropagation(); window.shareService('{{ service.pk }}')" title="Share this service">
+                                    <i class="fas fa-share"></i>
+                                </button>
                             </div>
+
+                            <!-- Service Tags -->
+                            {% if service.has_packages %}
+                            <div class="service-list-card-tags">
+                                <span class="service-list-card-tag">
+                                    📦 Packages Available
+                                </span>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     {% empty %}
-                    <div class="text-center" style="grid-column: 1 / -1; padding: var(--spacing-xxl);">
-                        <i class="fas fa-search" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: var(--spacing-lg);"></i>
+                    <div class="service-list-empty text-center">
+                        <div>
+                            <i class="fas fa-search"></i>
+                        </div>
                         <h3>No services found</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
-                            Try adjusting your search criteria or browse our popular categories.
+                        <p>
+                            We couldn't find any services matching your criteria. Try adjusting your filters or search for something else.
                         </p>
-                        <a href="{% url 'pages:homepage' %}" class="btn btn-primary">Browse All Services</a>
+                        <div class="service-list-empty-actions d-flex gap-3 justify-content-center">
+                            <button class="btn btn-primary" onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </button>
+                            <a href="{% url 'pages:homepage' %}" class="btn btn-outline">
+                                <i class="fas fa-home"></i> Browse All Services
+                            </a>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
 
                 <!-- Pagination -->
                 {% if services.has_other_pages %}
-                <div class="d-flex justify-content-center mt-5">
+                <div class="service-list-pagination d-flex justify-content-center mt-5">
                     <nav>
-                        <ul class="d-flex gap-2" style="list-style: none; align-items: center;">
+                        <ul class="d-flex gap-2">
                             {% if services.has_previous %}
-                                <li><a href="?{% url_replace page=services.previous_page_number %}" class="btn btn-outline">Previous</a></li>
+                                <li><a href="?page={{ services.previous_page_number }}" class="btn btn-outline">Previous</a></li>
                             {% endif %}
 
                             {% for num in services.paginator.page_range %}
                                 {% if services.number == num %}
-                                    <li><span class="btn btn-primary" style="cursor: default;">{{ num }}</span></li>
+                                    <li><span class="btn btn-primary">{{ num }}</span></li>
                                 {% elif num > services.number|add:'-3' and num < services.number|add:'3' %}
-                                    <li><a href="?{% url_replace page=num %}" class="btn btn-outline">{{ num }}</a></li>
+                                    <li><a href="?page={{ num }}" class="btn btn-outline">{{ num }}</a></li>
                                 {% endif %}
                             {% endfor %}
 
                             {% if services.has_next %}
-                                <li><a href="?{% url_replace page=services.next_page_number %}" class="btn btn-outline">Next</a></li>
+                                <li><a href="?page={{ services.next_page_number }}" class="btn btn-outline">Next</a></li>
                             {% endif %}
                         </ul>
                     </nav>
@@ -241,49 +407,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-    function clearFilters() {
-        // Clear all form inputs
-        document.querySelectorAll('input[type="text"], input[type="number"], select').forEach(input => {
-            input.value = '';
-        });
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-
-        // Submit the form
-        window.location.href = window.location.pathname;
-    }
-
-    function changeSort(sortValue) {
-        const url = new URL(window.location);
-        url.searchParams.set('sort', sortValue);
-        window.location.href = url.toString();
-    }
-
-    function bookService(serviceId) {
-        // Simple JavaScript implementation - in real app, check authentication status
-        window.location.href = `/orders/book/${serviceId}/`;
-    }
-
-    // Auto-submit form on filter change
-    document.querySelectorAll('input, select').forEach(element => {
-        element.addEventListener('change', function() {
-            // Debounce the submission
-            clearTimeout(window.filterTimeout);
-            window.filterTimeout = setTimeout(() => {
-                this.form.submit();
-            }, 500);
-        });
-    });
-
-    // Show loading state during search
-    document.querySelector('form').addEventListener('submit', function() {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('services-grid').style.opacity = '0.5';
-    });
-</script>
 {% endblock %}

@@ -4,80 +4,80 @@
 
 {% block content %}
 <!-- Registration Section -->
-<section style="min-height: 80vh; display: flex; align-items: center; background: var(--light-primary);">
+<section class="register-section">
     <div class="container">
-        <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-xxl); align-items: center; max-width: 1000px; margin: 0 auto;">
+        <div class="register-grid">
             <!-- Left Side - Benefits -->
-            <div>
-                <h1 style="font-size: 3rem; margin-bottom: var(--spacing-lg);">Join ServiceHub</h1>
-                <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: var(--spacing-xl);">
+            <div class="register-benefits">
+                <h1>Join ServiceHub</h1>
+                <p>
                     Create your account and start connecting with trusted service providers or grow your business.
                 </p>
 
-                <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                <div class="register-benefits-items">
+                    <div class="register-benefits-item">
+                        <div class="register-benefits-icon">
                             <i class="fas fa-rocket"></i>
                         </div>
                         <div>
-                            <div style="font-weight: 600;">Quick Setup</div>
-                            <div style="font-size: 0.875rem; color: var(--text-secondary);">Get started in minutes with our simple registration</div>
+                            <div>Quick Setup</div>
+                            <div>Get started in minutes with our simple registration</div>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                    <div class="register-benefits-item">
+                        <div class="register-benefits-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
                         <div>
-                            <div style="font-weight: 600;">Secure & Private</div>
-                            <div style="font-size: 0.875rem; color: var(--text-secondary);">Your data is protected with industry-standard security</div>
+                            <div>Secure & Private</div>
+                            <div>Your data is protected with industry-standard security</div>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: var(--accent-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                    <div class="register-benefits-item">
+                        <div class="register-benefits-icon">
                             <i class="fas fa-users"></i>
                         </div>
                         <div>
-                            <div style="font-weight: 600;">Join Community</div>
-                            <div style="font-size: 0.875rem; color: var(--text-secondary);">Connect with thousands of service providers and clients</div>
+                            <div>Join Community</div>
+                            <div>Connect with thousands of service providers and clients</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Right Side - Registration Form -->
-            <div class="card" style="box-shadow: var(--shadow-xl);">
-                <div class="card-body" style="padding: var(--spacing-xl);">
-                    <div class="text-center mb-4">
-                        <h2 style="margin-bottom: var(--spacing-sm);">Create Account</h2>
-                        <p style="color: var(--text-secondary);">Choose your account type and get started</p>
+            <div class="register-form-card card">
+                <div class="register-form-body card-body">
+                    <div class="register-form-title text-center mb-4">
+                        <h2>Create Account</h2>
+                        <p>Choose your account type and get started</p>
                     </div>
 
                     <!-- Account Type Selection -->
-                    <div style="margin-bottom: var(--spacing-lg);">
-                        <label class="form-label">I am a:</label>
-                        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md);">
-                            <label class="card" style="cursor: pointer; border: 2px solid var(--light-secondary); transition: all 0.3s ease;" onclick="selectAccountType('client')">
-                                <div class="card-body text-center">
-                                    <div style="width: 50px; height: 50px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-sm); font-size: 1.25rem; color: white;">
+                    <div class="register-account-types">
+                        <label class="register-form-label">I am a:</label>
+                        <div class="register-account-type-cards">
+                            <label class="register-account-type-card card" onclick="selectAccountType('client')">
+                                <div class="card-body">
+                                    <div class="register-account-type-icon">
                                         <i class="fas fa-user"></i>
                                     </div>
-                                    <div style="font-weight: 600;">Client</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Looking for services</div>
-                                    <input type="radio" name="account_type" value="client" style="display: none;" id="client-radio" checked>
+                                    <div>Client</div>
+                                    <div>Looking for services</div>
+                                    <input type="radio" name="account_type" value="client" class="register-hidden-input" id="client-radio" checked>
                                 </div>
                             </label>
 
-                            <label class="card" style="cursor: pointer; border: 2px solid var(--light-secondary); transition: all 0.3s ease;" onclick="selectAccountType('provider')">
-                                <div class="card-body text-center">
-                                    <div style="width: 50px; height: 50px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-sm); font-size: 1.25rem; color: white;">
+                            <label class="register-account-type-card card" onclick="selectAccountType('provider')">
+                                <div class="card-body">
+                                    <div class="register-account-type-icon">
                                         <i class="fas fa-store"></i>
                                     </div>
-                                    <div style="font-weight: 600;">Service Provider</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Offering services</div>
-                                    <input type="radio" name="account_type" value="provider" style="display: none;" id="provider-radio">
+                                    <div>Service Provider</div>
+                                    <div>Offering services</div>
+                                    <input type="radio" name="account_type" value="provider" class="register-hidden-input" id="provider-radio">
                                 </div>
                             </label>
                         </div>
@@ -85,64 +85,79 @@
 
                     <form method="post" id="registration-form">
                         {% csrf_token %}
+                        {% if form.errors %}
+                            <div style="background: #fee; border: 1px solid #fcc; color: var(--danger-color); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-lg);">
+                                <strong>Please correct the following errors:</strong>
+                                <ul style="margin: var(--spacing-sm) 0 0 0; padding-left: var(--spacing-lg);">
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
 
                         <!-- Personal Information -->
-                        <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
-                            <div class="form-group">
-                                <label class="form-label">First Name</label>
-                                <input type="text" name="first_name" class="form-input" placeholder="Enter first name" required>
+                        <div class="register-form-row">
+                            <div class="register-form-group form-group">
+                                <label class="register-form-label form-label">First Name</label>
+                                <input type="text" name="first_name" class="register-form-input form-input" placeholder="Enter first name" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Last Name</label>
-                                <input type="text" name="last_name" class="form-input" placeholder="Enter last name" required>
+                            <div class="register-form-group form-group">
+                                <label class="register-form-label form-label">Last Name</label>
+                                <input type="text" name="last_name" class="register-form-input form-input" placeholder="Enter last name" required>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
+                        <div class="register-form-group form-group">
+                            <label class="register-form-label form-label">Username</label>
+                            <input type="text" name="username" class="register-form-input form-input" placeholder="Choose a username" required>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-input" placeholder="Choose a username" required>
+                        <div class="register-form-group form-group">
+                            <label class="register-form-label form-label">Email Address</label>
+                            <input type="email" name="email" class="register-form-input form-input" placeholder="Enter your email" required>
                         </div>
 
-                        <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
-                            <div class="form-group">
-                                <label class="form-label">Password</label>
-                                <input type="password" name="password" class="form-input" placeholder="Create password" required>
+                        <div class="register-form-row">
+                            <div class="register-form-group form-group">
+                                <label class="register-form-label form-label">Password</label>
+                                <input type="password" name="password" class="register-form-input form-input" placeholder="Create password" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Confirm Password</label>
-                                <input type="password" name="password2" class="form-input" placeholder="Confirm password" required>
+                            <div class="register-form-group form-group">
+                                <label class="register-form-label form-label">Confirm Password</label>
+                                <input type="password" name="password2" class="register-form-input form-input" placeholder="Confirm password" required>
                             </div>
                         </div>
+
+                        <!-- Hidden account_type field -->
+                        <input type="hidden" name="account_type" id="account_type_hidden" value="client">
 
                         <!-- Phone Number (for providers) -->
-                        <div class="form-group" id="phone-group" style="display: none;">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" name="phone_number" class="form-input" placeholder="Enter phone number">
+                        <div class="register-form-group register-phone-group form-group" id="phone-group">
+                            <label class="register-form-label form-label">Phone Number</label>
+                            <input type="tel" name="phone_number" class="register-form-input form-input" placeholder="Enter phone number">
                         </div>
 
                         <!-- Terms and Conditions -->
-                        <div class="form-group">
-                            <label style="display: flex; align-items: flex-start; gap: var(--spacing-sm); cursor: pointer; font-size: 0.875rem;">
-                                <input type="checkbox" required style="margin-top: 0.125rem;">
-                                <span>I agree to the <a href="#" style="color: var(--primary-color); text-decoration: none;">Terms of Service</a> and <a href="#" style="color: var(--primary-color); text-decoration: none;">Privacy Policy</a></span>
+                        <div class="register-terms form-group">
+                            <label>
+                                <input type="checkbox" required>
+                                <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
                             </label>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: var(--spacing-lg);">
+                        <button type="submit" class="register-submit-btn btn btn-primary">
                             <i class="fas fa-user-plus"></i> Create Account
                         </button>
 
                         <!-- Login Link -->
-                        <div class="text-center">
-                            <p style="color: var(--text-secondary); margin: 0;">
+                        <div class="register-login-link text-center">
+                            <p>
                                 Already have an account?
-                                <a href="{% url 'users:login' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">Sign in here</a>
+                                <a href="{% url 'users:login' %}">Sign in here</a>
                             </p>
                         </div>
                     </form>
@@ -151,98 +166,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-    function selectAccountType(type) {
-        // Remove active state from all cards
-        document.querySelectorAll('.card').forEach(card => {
-            card.style.borderColor = 'var(--light-secondary)';
-        });
-
-        // Add active state to selected card
-        event.target.closest('.card').style.borderColor = 'var(--primary-color)';
-
-        // Set the radio button value
-        document.getElementById(`${type}-radio`).checked = true;
-
-        // Show/hide phone number field for providers
-        const phoneGroup = document.getElementById('phone-group');
-        if (type === 'provider') {
-            phoneGroup.style.display = 'block';
-        } else {
-            phoneGroup.style.display = 'none';
-        }
-    }
-
-    // Form validation and submission
-    document.getElementById('registration-form').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
-
-        const password = document.querySelector('input[name="password"]').value;
-        const password2 = document.querySelector('input[name="password2"]').value;
-
-        if (password !== password2) {
-            alert('Passwords do not match!');
-            return;
-        }
-
-        if (password.length < 8) {
-            alert('Password must be at least 8 characters long!');
-            return;
-        }
-
-        // Show loading state
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
-        submitBtn.disabled = true;
-
-        // Prepare form data
-        const formData = new FormData(this);
-
-        // Send AJAX request
-        fetch('{% url "users:register" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                // Success - redirect to homepage
-                window.location.href = data.redirect_url || '/';
-            } else {
-                // Show errors
-                let errorMessage = 'Registration failed:\n';
-                for (let field in data) {
-                    if (Array.isArray(data[field])) {
-                        errorMessage += `${field}: ${data[field].join(', ')}\n`;
-                    } else {
-                        errorMessage += `${field}: ${data[field]}\n`;
-                    }
-                }
-                alert(errorMessage);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        })
-        .finally(() => {
-            // Reset button state
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
-    });
-
-    // Password strength indicator
-    document.querySelector('input[name="password"]').addEventListener('input', function() {
-        const password = this.value;
-        // Add password strength logic here if needed
-    });
-</script>
 {% endblock %}

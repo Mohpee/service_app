@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils import timezone
+from rest_framework.renderers import JSONRenderer
 from .models import Order, Notification, Conversation, Message, ServiceRequest
 from .serializers import OrderSerializer, ConversationSerializer, MessageSerializer, ServiceRequestSerializer
 from .serializers import OrderSerializer, NotificationSerializer
@@ -13,6 +14,22 @@ class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+    def get(self, request, *args, **kwargs):
+        # Check if this is an API request (JSON format)
+        if request.accepted_renderer.format == 'json' or 'format=json' in request.GET.get('format', ''):
+            return super().get(request, *args, **kwargs)
+
+        # Otherwise, redirect to appropriate dashboard based on user type
+        user = request.user
+        if user.account_type == 'client':
+            return redirect('orders:client-orders')
+        elif user.account_type in ['provider', 'business']:
+            return redirect('orders:provider-orders')
+        else:
+            # Default fallback
+            return redirect('pages:homepage')
 
     def get_queryset(self):
         user = self.request.user
@@ -41,6 +58,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
 
     def get_permissions(self):
         if self.request.method == 'DELETE':
@@ -104,8 +122,20 @@ class ClientOrdersView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsClient]
 
+    def get(self, request, *args, **kwargs):
+        # Check if this is an API request (JSON format)
+        if request.accepted_renderer.format == 'json' or 'format=json' in request.GET.get('format', ''):
+            return super().get(request, *args, **kwargs)
+
+        # Otherwise, render HTML template
+        orders = self.get_queryset()
+        return render(request, 'orders/client_orders.html', {
+            'orders': orders,
+            'user': request.user
+        })
+
     def get_queryset(self):
-        return Order.objects.filter(client=self.request.user)
+        return Order.objects.filter(client=self.request.user).order_by('-created_at')
 
 class ProviderOrdersView(generics.ListAPIView):
     """List orders for providers"""
@@ -118,6 +148,20 @@ class ProviderOrdersView(generics.ListAPIView):
 class OrderBookingView(APIView):
     """Create a booking for a service"""
     permission_classes = [IsClient]
+
+    def get(self, request, service_id):
+        """Render booking form for GET requests"""
+        from services.models import Service
+        try:
+            service = Service.objects.get(id=service_id, is_available=True)
+        except Service.DoesNotExist:
+            return Response(
+                {'error': 'Service not found or not available'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Render HTML template instead of JSON
+        return render(request, 'orders/booking_form.html', {'service': service})
 
     def post(self, request, service_id):
         from services.models import Service
@@ -150,7 +194,7 @@ class OrderBookingView(APIView):
             provider=service.provider,
             quantity=request.data.get('quantity', 1),
             scheduled_date=request.data.get('scheduled_date'),
-            delivery_address=request.data.get('delivery_address'),
+            service_location=request.data.get('service_location'),
             notes=request.data.get('notes'),
             special_requirements=request.data.get('special_requirements')
         )
@@ -166,8 +210,42 @@ class OrderBookingView(APIView):
             related_service=service
         )
 
-        serializer = OrderSerializer(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Redirect to order detail page instead of returning JSON
+        return render(request, 'orders/order_success.html', {
+            'order': order,
+            'service': service
+        })
+
+class OrderBookingSuccessView(APIView):
+    """Display booking success page"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, service_id):
+        """Show booking success page"""
+        from services.models import Service
+
+        try:
+            service = Service.objects.get(id=service_id, is_available=True)
+            # Get the most recent order for this service by this user
+            order = Order.objects.filter(
+                client=request.user,
+                service=service
+            ).order_by('-created_at').first()
+
+            if order:
+                return render(request, 'orders/order_success.html', {
+                    'order': order,
+                    'service': service
+                })
+            else:
+                return render(request, 'orders/booking_error.html', {
+                    'service': service,
+                    'error': 'No recent booking found'
+                })
+        except Service.DoesNotExist:
+            return render(request, 'orders/booking_error.html', {
+                'error': 'Service not found'
+            })
 
 class ConversationListCreateView(generics.ListCreateAPIView):
     """List and create conversations"""
@@ -238,6 +316,18 @@ class NotificationListView(generics.ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request, *args, **kwargs):
+        # Check if this is an API request (JSON format)
+        if request.accepted_renderer.format == 'json' or 'format=json' in request.GET.get('format', ''):
+            return super().get(request, *args, **kwargs)
+
+        # Otherwise, render HTML template
+        notifications = self.get_queryset()
+        return render(request, 'orders/notifications.html', {
+            'notifications': notifications,
+            'user': request.user
+        })
+
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')
 
@@ -283,6 +373,20 @@ class MarkAllNotificationsReadView(APIView):
         return Response({
             'status': 'success',
             'marked_count': count
+        })
+
+class ClearAllNotificationsView(APIView):
+    """Delete all notifications for the current user"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        notifications = Notification.objects.filter(recipient=request.user)
+        count = notifications.count()
+        notifications.delete()
+
+        return Response({
+            'status': 'success',
+            'deleted_count': count
         })
 
 class NotificationSettingsView(APIView):

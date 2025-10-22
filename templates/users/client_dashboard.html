@@ -4,181 +4,146 @@
 
 {% block content %}
 <!-- Dashboard Header -->
-<section style="background: var(--primary-gradient); color: white; padding: var(--spacing-xxl) 0;">
+<section class="dashboard-header">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex">
             <div>
                 <h1>Welcome back, {{ user.get_full_name|default:user.username }}!</h1>
-                <p style="opacity: 0.9; font-size: 1.125rem;">Manage your bookings and discover new services</p>
+                <p>Manage your service bookings and track your orders</p>
             </div>
-            <div class="text-center">
-                <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: var(--spacing-sm);">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div style="opacity: 0.9;">Client Account</div>
+            <div class="text-right">
+                <div>{{ user.account_type|title }}</div>
+                <div>Account Type</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Stats Cards -->
-<section style="padding: var(--spacing-xxl) 0;">
+<!-- Dashboard Content -->
+<section class="dashboard-content">
     <div class="container">
-        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xxl);">
-            <!-- Total Orders -->
-            <div class="card text-center">
+        <!-- Stats Cards -->
+        <div class="dashboard-stats">
+            <div class="dashboard-stat-card card">
                 <div class="card-body">
-                    <div style="width: 60px; height: 60px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
+                    <div class="dashboard-stat-icon">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
-                    <div style="font-size: 2rem; font-weight: 700;">{{ orders_count }}</div>
-                    <div style="color: var(--text-secondary);">Total Orders</div>
+                    <h3 class="dashboard-stat-number">{{ orders_count }}</h3>
+                    <p class="dashboard-stat-label">Total Orders</p>
                 </div>
             </div>
 
-            <!-- Completed Orders -->
-            <div class="card text-center">
+            <div class="dashboard-stat-card card">
                 <div class="card-body">
-                    <div style="width: 60px; height: 60px; background: var(--success-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
+                    <div class="dashboard-stat-icon success">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <div style="font-size: 2rem; font-weight: 700;">{{ completed_orders }}</div>
-                    <div style="color: var(--text-secondary);">Completed</div>
+                    <h3 class="dashboard-stat-number">{{ completed_orders }}</h3>
+                    <p class="dashboard-stat-label">Completed Orders</p>
                 </div>
             </div>
 
-            <!-- Total Spent -->
-            <div class="card text-center">
+            <div class="dashboard-stat-card card">
                 <div class="card-body">
-                    <div style="width: 60px; height: 60px; background: var(--warning-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
-                        <i class="fas fa-money-bill-wave"></i>
+                    <div class="dashboard-stat-icon info">
+                        <i class="fas fa-dollar-sign"></i>
                     </div>
-                    <div style="font-size: 2rem; font-weight: 700;">KES {{ total_spent|floatformat:0 }}</div>
-                    <div style="color: var(--text-secondary);">Total Spent</div>
+                    <h3 class="dashboard-stat-number">KES {{ total_spent|floatformat:0 }}</h3>
+                    <p class="dashboard-stat-label">Total Spent</p>
                 </div>
             </div>
 
-            <!-- Favorite Services -->
-            <div class="card text-center">
+            <div class="dashboard-stat-card card">
                 <div class="card-body">
-                    <div style="width: 60px; height: 60px; background: var(--info-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin: 0 auto var(--spacing-lg);">
-                        <i class="fas fa-heart"></i>
+                    <div class="dashboard-stat-icon warning">
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <div style="font-size: 2rem; font-weight: 700;">12</div>
-                    <div style="color: var(--text-secondary);">Favorites</div>
+                    <h3 class="dashboard-stat-number">{{ pending_orders }}</h3>
+                    <p class="dashboard-stat-label">Pending Orders</p>
                 </div>
             </div>
         </div>
 
-        <div class="d-grid" style="grid-template-columns: 2fr 1fr; gap: var(--spacing-xxl);">
-            <!-- Recent Orders -->
-            <div class="card">
-                <div class="card-header">
-                    <h5><i class="fas fa-clock"></i> Recent Orders</h5>
-                </div>
-                <div class="card-body">
-                    {% for order in recent_orders %}
-                    <div style="display: flex; align-items: center; gap: var(--spacing-lg); padding: var(--spacing-lg); border-bottom: 1px solid var(--light-secondary);">
-                        <div style="width: 60px; height: 60px; background: var(--light-secondary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-tools" style="font-size: 1.5rem; color: var(--text-secondary);"></i>
-                        </div>
-
-                        <div style="flex: 1;">
-                            <h6 style="margin: 0;">{{ order.service_name }}</h6>
-                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
-                                {{ order.provider_name }} • {{ order.created_at|date:"M d, Y" }}
-                            </p>
-                        </div>
-
-                        <div class="text-right">
-                            <div style="font-weight: 600; color: var(--success-color);">KES {{ order.total_amount|floatformat:0 }}</div>
-                            <span class="badge {% if order.status == 'completed' %}badge-success{% elif order.status == 'pending' %}badge-warning{% elif order.status == 'cancelled' %}badge-danger{% else %}badge-info{% endif %}">
-                                {{ order.status|title }}
-                            </span>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="text-center" style="padding: var(--spacing-xxl); color: var(--text-secondary);">
-                        <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: var(--spacing-lg);"></i>
-                        <h4>No orders yet</h4>
-                        <p>Start exploring services and make your first booking!</p>
-                        <a href="{% url 'services:service-list' %}" class="btn btn-primary">Browse Services</a>
-                    </div>
-                    {% endfor %}
+        <!-- Quick Actions -->
+        <div class="dashboard-quick-actions card">
+            <div class="card-header">
+                <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-flex">
+                    <a href="/services/" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Browse Services
+                    </a>
+                    <a href="{% url 'orders:client-orders' %}" class="btn btn-outline">
+                        <i class="fas fa-list"></i> View All Orders
+                    </a>
+                    <a href="{% url 'users:profile' %}" class="btn btn-outline">
+                        <i class="fas fa-user"></i> View Profile
+                    </a>
+                    <a href="{% url 'users:profile-update' %}" class="btn btn-outline">
+                        <i class="fas fa-user-edit"></i> Update Profile
+                    </a>
+                    <a href="{% url 'orders:notifications' %}" class="btn btn-outline">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
                 </div>
             </div>
+        </div>
 
-            <!-- Quick Actions & Recommendations -->
-            <div>
-                <!-- Quick Actions -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                            <a href="{% url 'services:service-list' %}" class="btn btn-outline" style="justify-content: flex-start;">
-                                <i class="fas fa-search"></i> Find Services
-                            </a>
-                            <a href="#" class="btn btn-outline" style="justify-content: flex-start;">
-                                <i class="fas fa-heart"></i> My Favorites
-                            </a>
-                            <a href="#" class="btn btn-outline" style="justify-content: flex-start;">
-                                <i class="fas fa-history"></i> Order History
-                            </a>
-                            <a href="{% url 'users:profile' %}" class="btn btn-outline" style="justify-content: flex-start;">
-                                <i class="fas fa-user-edit"></i> Edit Profile
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-bell"></i> Recent Notifications</h5>
-                    </div>
-                    <div class="card-body">
-                        <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                            <div class="d-flex gap-3">
-                                <div style="width: 40px; height: 40px; background: var(--success-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; color: white;">
-                                    <i class="fas fa-check"></i>
+        <!-- Recent Orders -->
+        <div class="dashboard-recent-orders card">
+            <div class="card-header">
+                <h4><i class="fas fa-history"></i> Recent Orders</h4>
+            </div>
+            <div class="card-body">
+                {% if recent_orders %}
+                    <div class="d-grid gap-3">
+                        {% for order in recent_orders %}
+                        <div class="dashboard-order-item">
+                            <div class="dashboard-order-info">
+                                <div class="dashboard-order-icon">
+                                    <i class="fas fa-tools"></i>
                                 </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600;">Order Completed</div>
-                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Your cleaning service was completed successfully</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">2 hours ago</div>
+                                <div class="dashboard-order-details">
+                                    <h5>{{ order.service_name }}</h5>
+                                    <p>
+                                        {{ order.provider_name }} • {{ order.created_at|date:"M d, Y" }}
+                                    </p>
                                 </div>
                             </div>
-
-                            <div class="d-flex gap-3">
-                                <div style="width: 40px; height: 40px; background: var(--info-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; color: white;">
-                                    <i class="fas fa-calendar"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600;">Upcoming Service</div>
-                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">You have a tutoring session tomorrow at 2 PM</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">1 day ago</div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-3">
-                                <div style="width: 40px; height: 40px; background: var(--warning-color); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; color: white;">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600;">Review Reminder</div>
-                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">How was your experience with Sarah's Cleaning?</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">3 days ago</div>
+                            <div class="text-right">
+                                <div class="dashboard-order-amount">KES {{ order.total_amount|floatformat:0 }}</div>
+                                <div class="dashboard-order-status">
+                                    {% if order.status == 'pending' %}
+                                        <span class="badge" style="background: var(--warning-color);">Pending</span>
+                                    {% elif order.status == 'confirmed' %}
+                                        <span class="badge" style="background: var(--info-color);">Confirmed</span>
+                                    {% elif order.status == 'completed' %}
+                                        <span class="badge" style="background: var(--success-color);">Completed</span>
+                                    {% else %}
+                                        <span class="badge" style="background: var(--danger-color);">{{ order.status|title }}</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-
-                        <div style="margin-top: var(--spacing-lg); text-align: center;">
-                            <a href="{% url 'orders:notifications' %}" class="btn btn-outline">View All Notifications</a>
-                        </div>
+                        {% endfor %}
                     </div>
-                </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'orders:client-orders' %}" class="btn btn-outline">View All Orders</a>
+                    </div>
+                {% else %}
+                    <div class="dashboard-empty-state">
+                        <div>
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h4>No orders yet</h4>
+                        <p>
+                            Start by browsing our services and booking your first service.
+                        </p>
+                        <a href="/services/" class="btn btn-primary">Browse Services</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -65,6 +65,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "builtins": [
+                "django.templatetags.static",
+            ],
         },
     },
 ]
@@ -97,6 +100,12 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"  # Optimized static handling
 
+# Additional static files finders for better development
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -105,8 +114,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom user model
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "pages:homepage"
+LOGOUT_REDIRECT_URL = "pages:homepage"
+LOGIN_URL = "users:login"
+
+# Base URL for external services (M-Pesa callbacks, etc.)
+BASE_URL = env("BASE_URL", default="http://127.0.0.1:8000")
 
 # Crispy forms config
 CRISPY_TEMPLATE_PACK = "bootstrap4"

@@ -39,7 +39,7 @@ class MpesaService:
             "PartyA": phone_number,
             "PartyB": self.business_shortcode,
             "PhoneNumber": phone_number,
-            "CallBackURL": f"{settings.BASE_URL}/api/payments/mpesa-callback/",
+            "CallBackURL": f"{settings.BASE_URL}/payments/mpesa-callback/",
             "AccountReference": f"Order#{order_ref}",
             "TransactionDesc": f"Payment for Order#{order_ref}"
         }

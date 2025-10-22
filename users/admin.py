@@ -22,6 +22,26 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
+    # Override to show password field in list view (hashed)
+    def get_list_display(self, request):
+        return ['username', 'email', 'account_type', 'first_name', 'last_name', 'is_active', 'date_joined', 'password_status']
+
+    def password_status(self, obj):
+        return "Set" if obj.password else "Not Set"
+    password_status.short_description = "Password"
+
+    # Add password field to the detail view
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj:  # Change view
+            fieldsets = list(fieldsets)
+            # Add password field to the first fieldset (Account section)
+            account_fields = list(fieldsets[0][1]['fields'])
+            if 'password' not in account_fields:
+                account_fields.insert(-1, 'password')  # Insert before last_login
+                fieldsets[0] = (fieldsets[0][0], {'fields': tuple(account_fields)})
+        return fieldsets
+
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
             services_count=Count('services'),
